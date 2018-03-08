@@ -1,0 +1,23 @@
+{
+  "name": "servdb",
+  "version": "0.0.1",
+  "description": "key value sql server attributes",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "keywords": [
+    "sql",
+    "key",
+    "value",
+    "services",
+    "http",
+    "config",
+    "vars"
+  ],
+  "author": "dexta.de@gmail.com",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
