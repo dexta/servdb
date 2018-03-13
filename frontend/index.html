@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>hello world</title>
+    <link rel="icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <link rel="stylesheet" href="css/custom.css">
+  </head>
+<body>
+
+<div class="container">
+ <div class="row">
+  <div  class="col-lg-4 col-md-6 col-sm-12">
+    <hello></hello>
+  </div>
+  <div class="col-lg-6 col-md-12 col-sm-12 align-self-end">
+    <entertitletext></entertitletext>
+  </div>
+ </div>
+</div>
+
+<!-- include extern librarys -->
+<script src="js/superagent.js"></script>
+
+<!-- include components -->
+<script src="components/hello.tag" type="riot/tag"></script>
+<script src="components/entertitletext.tag" type="riot/tag"></script>
+
+<!-- include riot.js and the compiler -->
+<script src="js/riot+compiler.js"></script>
+
+<!-- <script src="js/indexed.js"></script> -->
+
+<script type="text/javascript">
+  riot.mount('*');
+</script>
+
+</body>
+</html>

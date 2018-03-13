@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  api:
+    build: .
+    command: npm start
+    volumes:
+     - ./:/var/www/
+    ports:
+      - "7423:8423"
+    environment:
+      NODE_ENV: dev
+      BUILD_VERSION: 0.3
+    networks:
+      - frontendNetwork
+      - backendNetwork
+
+  sqldb:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: docker
+      MYSQL_USER: testdbuser
+      MYSQL_PASSWORD: testdbpassword
+      MYSQL_DATABASE: testdatabase
+    networks:
+      - backendNetwork
+    volumes:
+      - ./data/maria:/var/lib/mysql
+
+networks:
+  frontendNetwork:
+  backendNetwork:
