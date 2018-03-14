@@ -21,6 +21,7 @@
   "dependencies": {
     "async": "^2.6.0",
     "express": "^4.16.2",
+    "express-async-errors": "^2.1.2",
     "mysql": "^2.15.0",
     "nodemon": "^1.17.1"
   }

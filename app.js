@@ -10,6 +10,7 @@ const ipinterface = os.networkInterfaces();
 const hostip = (ipinterface.eth0||false)? ipinterface.eth0[0].address : '0.0.0.0';
 
 const app = express();
+require('express-async-errors');
 const bodyParser = require('body-parser');
 app.use(express.static('frontend'));
 app.use(bodyParser.json());
@@ -39,6 +40,34 @@ const retrysql = () => {
 retrysql();
 
 // rest routes api
+
+app.get('/insert/simple/:key/:value', async (req, res)=> {
+  let data = {key:req.params.key,value:req.params.value};
+  let selCode = 500;
+  let selReturn = {good:true};
+
+  let reint = await sql.insertOne(data);
+  if(reint) {
+    selCode = 200;
+    selReturn = reint;
+  } else {
+    selCode = 404;
+    selReturn = {err:true,data:reint};
+  }
+  res.status(selCode).json(selReturn);
+});
+
+app.get('/search/key/:key', async (req, res) => {
+  let searchResulutes = await sql.searchByKey(req.params.key);
+  res.status(200).json(searchResulutes);
+});
+
+app.get('/search/value/:value', async (req, res) => {
+  let searchResulutes = await sql.searchByValue(req.params.value);
+  res.status(200).json(searchResulutes);
+}); 
+
+// old stuff
 app.get('/api/get/all', (req,res) => {
   let allQuery = 'SELECT * FROM titletext ORDER BY id DESC LIMIT 10;';
   sql.query(allQuery, (err, rows, fields) => {

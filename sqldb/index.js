@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const async = require('async');
 
 // const filehandler = require('./filehandler.js');
+const sqlAPI = require('./sqlAPI.js');
 
 const db_config = {
   host     : 'sqldb',
@@ -115,6 +116,20 @@ rdb.insertData = function insertData(data,callback) {
 //     let re = await rdb.pquery(ele);
 //   },rdb);
 // };
+
+rdb.insertOne = async function insertOne(data) {
+  return await sqlAPI.insertEntry(rdb, data);
+};
+
+rdb.searchByKey = async function searchByKey(key) {
+  return sqlAPI.searchKey(rdb, key);
+};
+
+rdb.searchByValue = async function searchByValue(value) {
+  return sqlAPI.searchValue(rdb, value);
+};
+
+
 
 // and export all
 module.exports = rdb;
