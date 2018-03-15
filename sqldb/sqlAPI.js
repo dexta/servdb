@@ -46,7 +46,11 @@ spi.searchValue = async (db,valueString) => {
 };
 
 
-
+spi.getOneValue = async (db,searchKey) => {
+  let seekKeyString = db.connection.escape(searchKey);
+  let fireSearch = await db.pquery(`SELECT value FROM servtable WHERE \`key\` like ${seekKeyString} LIMIT 1;`);
+  return fireSearch[0]['value'];
+};
 
 
 

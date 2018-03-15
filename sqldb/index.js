@@ -129,7 +129,9 @@ rdb.searchByValue = async function searchByValue(value) {
   return sqlAPI.searchValue(rdb, value);
 };
 
-
+rdb.getOneValue = async function getOneValue(key) {
+  return sqlAPI.getOneValue(rdb, key);
+}
 
 // and export all
 module.exports = rdb;

@@ -65,7 +65,12 @@ app.get('/search/key/:key', async (req, res) => {
 app.get('/search/value/:value', async (req, res) => {
   let searchResulutes = await sql.searchByValue(req.params.value);
   res.status(200).json(searchResulutes);
-}); 
+});
+
+app.get('/onevalue/:key', async (req, res) => {
+  let theone = await sql.getOneValue(req.params.key);
+  res.status(200).send(theone);
+});
 
 // old stuff
 app.get('/api/get/all', (req,res) => {
