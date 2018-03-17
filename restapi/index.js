@@ -53,6 +53,16 @@ app.get('/search/value/:value', async (req, res) => {
   res.status(200).json(searchResulutes);
 });
 
+app.get('/search/:keyval/:limit/:value', async (req, res) => {
+  let opts = {};
+  opts.limit = req.params.limit;
+  opts.by = req.params.keyval;
+  opts.search = req.params.value;
+  let searchResulutes = await sql.searchKeyValLimit(opts);
+
+  res.status(200).json(searchResulutes);
+});
+
 app.get('/onevalue/:key', async (req, res) => {
   let theone = await sql.getOneValue(req.params.key);
   res.status(200).send(theone);

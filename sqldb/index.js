@@ -131,7 +131,11 @@ rdb.searchByValue = async function searchByValue(value) {
 
 rdb.getOneValue = async function getOneValue(key) {
   return sqlAPI.getOneValue(rdb, key);
-}
+};
+
+rdb.searchKeyValLimit = async function searchKeyValLimit(options) {
+  return sqlAPI.searchKeyValLimit(rdb,options);
+};
 
 // and export all
 module.exports = rdb;

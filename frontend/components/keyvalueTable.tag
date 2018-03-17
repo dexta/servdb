@@ -84,7 +84,7 @@
   };
 
   this.getKVList = (strtoget) => {
-    superagent('get',"/search/key/"+strtoget).then( (res) => {
+    superagent('get',"/search/key/"+this.state.searchlimit+"/"+strtoget).then( (res) => {
     	that.kvlist = res.body;
       that.rawList = res.body;
     	that.update();
@@ -106,6 +106,7 @@
   this.setSearch = (e) => {
     e.preventDefault();
     this.state.search = this.refs.searchstring.value;
+    this.state.searchlimit = this.refs.searchlimit.value;
     this.getKVList(this.state.search);
     this.openclose.search = false;
     this.update();
