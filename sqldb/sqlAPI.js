@@ -8,18 +8,18 @@ spi.insertEntry = async (db,data) => {
     if(testExists[0]||false) {
       let testSame = await db.pquery(`SELECT * FROM servtable WHERE \`key\`=${seekKeyString} AND \`value\`=${seekValueString};`);
       if(testSame[0]||false) {
-        return {info:'same key/value skip'};
+        return {msg:'same key/value skip',status:'info'};
       } else {
         let copyOld = await db.pquery(`INSERT INTO history (\`key\`,\`value\`) SELECT * FROM servtable WHERE \`key\`=${seekKeyString};`);
         let updateState = await db.pquery(`UPDATE servtable SET \`value\`=${seekValueString} WHERE \`key\`=${seekKeyString};`);
-        return {success:'update value and save entry to history'};
+        return {msg:'update value and save entry to history',status:'success'};
       }
     } else {
       reInsert = await db.pquery(`INSERT INTO servtable (\`key\`,\`value\`) VALUES(${seekKeyString}, ${seekValueString});`);
-      return {success:'happy little clouds and every tree needs a friend'};
+      return {msg:'happy little clouds and every tree needs a friend',status:'success'};
     }
   } else {
-    return {error:"some is wrong with data"};
+    return {msg:"some is wrong with data",status:'danger'};
   }
 };
 
