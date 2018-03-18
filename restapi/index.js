@@ -13,10 +13,9 @@ const generateEnvVariables = (jobj,options) => {
   let base = options.base||'';
   let tail = options.tail||'';
   if(base===''&&tail==='') return 0;
-  
   let outStr = '';
   for(let l in jobj) {
-    let key = jobj[l].key.replace(base+'\.','').replace(/\./g,'_').toUpperCase();
+    let key = jobj[l].key.replace(base,'').replace(/\./g,'_').toUpperCase();
     let val = jobj[l].value;
     if(options.export||false) {
       outStr += 'export ';
@@ -68,6 +67,15 @@ app.get('/onevalue/:key', async (req, res) => {
   res.status(200).send(theone);
 });
 
+app.get('/env/:limit/:base/:key', async (req, res) => {
+  let opts = {};
+  opts.limit = req.params.limit;
+  opts.by = 'key';
+  opts.search = req.params.base+req.params.key;
+  let searchResulutes = await sql.searchKeyValLimit(opts);
+
+  res.status(200).send(generateEnvVariables(searchResulutes,{base:req.params.base,tail:req.params.key,export:false}));
+});
 
 app.get('/env/:base/:key', async (req, res) => {
   let fullKey = `${req.params.base}.${req.params.key}`;
