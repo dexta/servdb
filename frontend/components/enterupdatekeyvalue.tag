@@ -84,7 +84,7 @@
 <script>
   let that = this;
   this.allKeys = [];
-  this.openclose = {single:false,tails:true};
+  this.openclose = {single:true,tails:false};
   this.state = {single:'service.',tails:'',base:''};
   this.base = 'service.hellodpocker.api.';
   this.tails = [{key:'host.name',value:'api'},{key:'host.port',value:8074},{key:'network.frontend',value:'frontendNetwork'}];
