@@ -1,5 +1,5 @@
 <enterupdatekeyvalue>
-<h4>enter update key value</h4>
+<h4 class="bg-{opts.color}">#{opts.number}</h4>
 <hr>
 <button class="btn btn-prinmary" onclick={ showhide_single() }>Single</button>
 <button class="btn btn-info" onclick={ showhide_tails() }>Base Tails</button>

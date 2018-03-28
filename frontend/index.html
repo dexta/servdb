@@ -9,28 +9,61 @@
     <link rel="stylesheet" href="css/font-awesome.css">
     <link rel="stylesheet" href="css/custom.css">
   </head>
-<body>
+<body>    
 
-<div class="container">
- <div class="row">
-  <div  class="col-lg-8 col-md-12 col-sm-12">
-    <enterupdatekeyvalue></enterupdatekeyvalue>
+<div class=" container-fluid">
+  <div class="row">
+  <div class="col-lg-6 col-md-12 col-sm-12">
+    <button class="btn btn-warning" onclick="addSome('edit');">Add Edit</button>
+    <div class="btn-group" id="editBtnQuick">
+      <!-- <button type="button" class="btn btn-primary">Left</button>
+      <button type="button" class="btn btn-danger">Middle</button>
+      <button type="button" class="btn btn-secondary">Right</button> -->
+    </div>
+  </div>
+  <div class="col-lg-6 col-md-12 col-sm-12">
+    <button class="btn btn-info" onclick="addSome('view');">Add View</button>
+    <div class="btn-group" id="viewBtnQuick" role="group" aria-label="quick click views">
+      <!-- <button type="button" class="btn btn-dark">Left</button>
+      <button type="button" class="btn btn-light">Middle</button>
+      <button type="button" class="btn btn-secondary">Right</button> -->
+    </div>  
   </div>  
+ </div>
+ <hr>
+<div class="row">
+  <div class="col-lg-6 col-md-12 col-sm-12">
+    <div class="row" id="editLine">
+
+    </div>
+  </div>
+  <div class="col-lg-6 col-md-12 col-sm-12"> 
+    <div class="row" id="viewLine">
+
+    </div>
+  </div>
+</div>
+
+
+ <!-- <div class="row"> -->
+<!--   <div  class="col-lg-8 col-md-12 col-sm-12">
+    <enterupdatekeyvalue></enterupdatekeyvalue>
+  </div>   -->
   <!--   <div  class="col-lg-4 col-md-6 col-sm-12">
     <keyvalueTable></keyvalueTable>
   </div> -->
 
-  <div  class="col-lg-6 col-md-6 col-sm-12">
+<!--   <div  class="col-lg-6 col-md-6 col-sm-12">
     <keyvalueTable></keyvalueTable>
   </div>
   <div  class="col-lg-6 col-md-6 col-sm-12">
     <keyvalueTable></keyvalueTable>
-  </div>    
+  </div>     -->
 
 <!--   <div  class="col-lg-4 col-md-6 col-sm-12">
     <hello></hello>
   </div> -->
- </div>
+ <!-- </div> -->
 </div>
 
 <!-- include extern librarys -->
@@ -48,6 +81,68 @@
 
 <script type="text/javascript">
   riot.mount('*');
+  let store = {
+    viewCount:1,
+    editCount:1,
+  };
+
+  function addSome(type) {
+    let line = document.getElementById(type+"Line");
+    let btnQuick = document.getElementById(type+"BtnQuick");
+    let divC = document.createElement("div");
+    let btnQ = document.createElement("button");
+    let newComp = (type==='edit')? "enterupdatekeyvalue" : "keyvalueTable";
+    let newElement = document.createElement(newComp);
+    let count = store[type+"Count"];
+    divC.className = "col-lg-6 col-md-12 col-sm-12 bg-light";
+    divC.setAttribute("id", "editCompo_"+count);
+    btnQ.className = "btn btn-secondary";
+    btnQ.innerHTML = "no. #"+count;
+    newElement.setAttribute("number",count);
+    newElement.setAttribute("color","info");
+
+
+    divC.appendChild(newElement);
+    btnQuick.appendChild(btnQ);
+    line.appendChild(divC);
+    store[type+"Count"]++;
+    riot.mount(newComp);
+  }
+
+
+  function addEdit() {
+    let editLine = document.getElementById("editLine");
+    let btnQuick = document.getElementById("editBtnQuick");
+    let divC = document.createElement("div");
+    let btnQ = document.createElement("button");
+    divC.className = "col-lg-6 col-md-12 col-sm-12 bg-light";
+    divC.setAttribute("id", "editCompo_"+store.editCount);
+    btnQ.className = "btn btn-secondary";
+    btnQ.innerHTML = "no. #"+store.editCount;
+    let editElement = document.createElement("enterupdatekeyvalue");
+    divC.appendChild(editElement);
+    btnQuick.appendChild(btnQ);
+    editLine.appendChild(divC);
+    store.editCount++;
+    riot.mount("enterupdatekeyvalue");
+  }
+
+  function addView() {
+    let viewLine = document.getElementById("viewLine");
+    let divC = document.createElement("div");
+    divC.className = "col-lg-6 col-md-12 col-sm-12 bg-light";
+    let viewElement = document.createElement("keyvalueTable");
+    divC.appendChild(viewElement);
+    viewLine.appendChild(divC);
+    riot.mount("keyvalueTable");
+  }
+
+  // setTimeout( ()=> {
+  //   addEdit();
+  //   addEdit();
+  //   addView();
+  //   addView();
+  // },1000);
 </script>
 
 </body>

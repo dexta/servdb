@@ -3,6 +3,7 @@ version: "3"
 services:
   api:
     build: .
+    # image: game.lieray.de/dexta/servdocker/api:0.5
     command: npm start
     volumes:
      - ./:/var/www/
@@ -10,7 +11,7 @@ services:
       - "7423:8423"
     environment:
       NODE_ENV: dev
-      BUILD_VERSION: 0.3
+      BUILD_VERSION: 0.5
     networks:
       - frontendNetwork
       - backendNetwork
@@ -25,8 +26,8 @@ services:
       MYSQL_DATABASE: testdatabase
     networks:
       - backendNetwork
-    volumes:
-      - ./data/maria:/var/lib/mysql
+    # volumes:
+    #   - ./data/maria:/var/lib/mysql
 
 networks:
   frontendNetwork:

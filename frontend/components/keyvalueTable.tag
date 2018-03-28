@@ -1,4 +1,6 @@
 <keyvalueTable>
+<h4 class="bg-{opts.color}">#{opts.number}</h4>
+<hr>
 <button class="btn btn-info" onclick={ showhide } id="showhide_search">Search</button>
 <button class="btn btn-prinmary" onclick={ showhide } id="showhide_filter">Filter</button>
 <button class="btn btn-danger" onclick={ showhide } id="showhide_shorter">Shorterkey</button>
