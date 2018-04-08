@@ -23,7 +23,7 @@ type Conf struct {
 var config Conf
 
 func main() {
-  config := readConfig()
+  
   app := cli.NewApp()
   app.Name = "servDB"
   app.Usage = "ask one how can know it !"
@@ -67,10 +67,18 @@ func main() {
       Name: "limit, l",
       Usage: "max return count of items",
     },
+    cli.StringFlag{
+      Name: "config, c",
+      Value: "servconfig.json",
+      Usage: "override the configfile path",
+    },
   }
 
 
+
   app.Action = func(c *cli.Context) error {
+  // read config after cli parameter maybe we want to override the source
+    config := readConfig(c.String("config"))
 
     searchString := "service.hellodocker.%"
     if c.String("search") != "" {
@@ -144,14 +152,14 @@ func main() {
   }
 }
 
-func readConfig() Conf {
-  file, _ := os.Open("./config.json")
+func readConfig(filename string) Conf {
+  file, _ := os.Open(filename)
   defer file.Close()
   decoder := json.NewDecoder(file)
   configuration := Conf{}
   err := decoder.Decode(&configuration)
   if err != nil {
-    fmt.Println("error:", err)
+    log.Fatal("error:", err)
   }
   // fmt.Println(configuration)
   return configuration
