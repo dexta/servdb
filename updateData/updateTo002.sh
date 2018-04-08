@@ -12,7 +12,7 @@ usage() {
 if [ -z "$1" ]; then
   usage;
 else
-  cat ./version002.sql | docker exec -i $1 /usr/bin/mysql -utestdbuser -ptestdbpassword testdatabase
+  cat ./version002.sql | docker exec -i $1 /usr/bin/mysql -userviceuser -pserviceuser23password serv
 fi
 
 

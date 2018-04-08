@@ -4,12 +4,12 @@ const async = require('async');
 // const filehandler = require('./filehandler.js');
 const sqlAPI = require('./sqlAPI.js');
 
-const db_config = {
-  host     : 'sqldb',
-  user     : 'testdbuser',
-  password : 'testdbpassword',
-  database : 'testdatabase'
-};
+let db_config = {};
+
+db_config.host = (process.env.MYSQL_HOST)? process.env.MYSQL_HOST : 'sqldb';
+db_config.user = (process.env.MYSQL_USER)? process.env.MYSQL_USER : 'testdbuser';
+db_config.password = (process.env.MYSQL_PASSWORD)? process.env.MYSQL_PASSWORD : 'testdbpassword';
+db_config.database = (process.env.MYSQL_DATABASE)? process.env.MYSQL_DATABASE : 'testdatabase';
 
 let rdb = {};
 

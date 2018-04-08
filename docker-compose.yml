@@ -11,7 +11,11 @@ services:
       - "7423:8423"
     environment:
       NODE_ENV: dev
-      BUILD_VERSION: 0.5
+      BUILD_VERSION: 0.51
+      MYSQL_ROOT_PASSWORD: docker
+      MYSQL_USER: serviceuser
+      MYSQL_PASSWORD: serviceuser23password
+      MYSQL_DATABASE: serv
     networks:
       - frontendNetwork
       - backendNetwork
@@ -21,13 +25,13 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: docker
-      MYSQL_USER: testdbuser
-      MYSQL_PASSWORD: testdbpassword
-      MYSQL_DATABASE: testdatabase
+      MYSQL_USER: serviceuser
+      MYSQL_PASSWORD: serviceuser23password
+      MYSQL_DATABASE: serv
     networks:
       - backendNetwork
-    # volumes:
-    #   - ./data/maria:/var/lib/mysql
+    volumes:
+      - ./data/maria:/var/lib/mysql
 
 networks:
   frontendNetwork:
