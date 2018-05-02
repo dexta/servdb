@@ -42,7 +42,26 @@ const retrysql = () => {
   });
 }; 
 
-retrysql();
+async function newTestStack() {
+  // let testConections = await sql.testDbConection();
+  let testTable = await sql.testDbTable('servtable');
+  let tableColumns = await sql.showColumnsFrom('servtable');
+  // console.dir(testTable);
+  // console.dir(tableColumns);
+  let testVersion = {};
+  testVersion.dropTable=true;
+  testVersion.tableName='version';
+  testVersion.primaryKey='id';
+  testVersion.col = [];
+  testVersion.col[0] = {name:'id',type:'INTEGER',options:' NOT NULL AUTO_INCREMENT'};
+  testVersion.col[1] = {name:'version',type:'VARCHAR(64)',options:'NOT NULL'};
+  let testCreate = await sql.createTable(testVersion);
+  console.log(testCreate);
+};
+
+newTestStack();
+
+// retrysql();
 
 // rest routes api
 const restAPI = require('./restapi')(app,sql,config);

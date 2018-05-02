@@ -25,7 +25,7 @@ function handleDisconnect() {
   rdb.connection.on('error', function(err) {
     console.log('db error', err.code);
     if(err.code === 'PROTOCOL_CONNECTION_LOST') {
-      console.log("reconect to maria !!!");
+      console.log("reconect to percona !!!");
       handleDisconnect();
     } else {
       throw err;
@@ -108,14 +108,90 @@ rdb.insertData = function insertData(data,callback) {
 };
 
 
-// rdb.importData = async function importData(filename) {
-//   let filelist = await filehandler.filte2list(filename);
-//   console.log('import sql from '+filename);
-//   filelist.forEach( async (ele) => {
-//     console.log(ele);
-//     let re = await rdb.pquery(ele);
-//   },rdb);
+// test the database, tables and insert/selcet
+
+// rdb.testDbConection = function testDbConection() {
+//   return new Promise( (resolve, reject) => {
+//     this.connection.connect( (err, data) => {
+//       if (err) reject(err);        
+//       resolve(this.connection.threadId);
+//     });
+//   });
 // };
+
+rdb.testDbTable = async (tableName) => {
+  let doesItExist = await rdb.pquery(`SELECT * FROM ${tableName} LIMIT 1;`);
+  if(doesItExist.length===0) {
+    console.log(`no table with name ${tableName}`);
+  } else {
+    console.log(`some table here with name: ${tableName}`);
+    console.dir(doesItExist);
+  }
+  return doesItExist;
+};
+
+rdb.showColumnsFrom = async (nameTable) => {
+  let columns = await rdb.pquery(`show columns from ${nameTable}; `);
+  if(columns.length===0) {
+    console.log(`no columns in table with name ${nameTable}`);
+  } else {
+    console.log(`table here with name: ${nameTable} columns`);
+    console.dir(columns);
+  }
+  return columns;
+};
+
+
+rdb.createTable = async (createObj) => {
+  // DROP TABLE IF EXISTS `history`;
+    
+  // CREATE TABLE `history` (
+  //   `id` INTEGER NOT NULL AUTO_INCREMENT,
+  //   `key` VARCHAR(3072) NOT NULL,
+  //   `value` VARCHAR(3072) NOT NULL,
+  //   PRIMARY KEY (`id`)
+  // );
+  // createObj = {};
+  // createObj.dropTable=true;
+  // createObj.tableName='history';
+  // createObj.primaryKey='id';
+  // createObj.col = [];
+  // createObj.col[0] = {name:'id',type:'INTEGER',options:' NOT NULL AUTO_INCREMENT'};
+  // createObj.col[1] = {name:'key',type:'VARCHAR(3072)',options:'NOT NULL'},
+  // createObj.col[2] = {name:'value',type:'VARCHAR(3072)',options:'NOT NULL'},
+  // createObj.col[3] = {name:'',type:'',options:''},
+
+  console.log("create Object ");
+  console.dir(createObj);
+
+  let createQuery = '';
+  let colList = '';
+  if(createObj.dropTable) {
+    let dropedTable = await rdb.pquery('DROP TABLE IF EXISTS `'+createObj.tableName+'`;');
+    console.log(`dropping table ${createObj.tableName}`);
+    console.dir(dropedTable);
+  }
+
+  for(let c=0,cl=createObj.col.length;c<cl;c++) {
+    let colI = createObj.col[c];
+    colList += '`'+colI.name+'` '+colI.type+' '+colI.options+',';
+  }
+  colList += 'PRIMARY KEY (`'+createObj.primaryKey+'`)';
+
+  createQuery += 'CREATE TABLE `'+createObj.tableName+'` (';
+  createQuery += colList;
+  createQuery += ');'
+  
+  console.log("create Table Query");
+  console.log(createQuery);
+
+  let crtaCall = await rdb.pquery(createQuery);
+  return crtaCall;
+};
+// end the testing of databse, tables and select/inserts
+
+
+
 
 rdb.insertOne = async function insertOne(data) {
   return await sqlAPI.insertEntry(rdb, data);
