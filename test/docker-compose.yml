@@ -1,0 +1,63 @@
+version: "3"
+
+services:
+  influxdb:
+    image: influxdb
+    environment:
+      - INFLUXDB_DB=testServDB
+      - INFLUXDB_HTTP_AUTH_ENABLED=false
+    volumes:
+      - ./testdata/:/var/influxdb
+    ports:
+      - "8086:8086"
+    expose:
+      - 8086
+    networks:
+      - backendNetwork
+      - frontendNetwork
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - frontendNetwork
+      - backendNetwork
+
+
+
+  # api:
+  #   build: .
+  #   # image: game.lieray.de/dexta/servdocker/api:0.5
+  #   command: npm start
+  #   volumes:
+  #    - ./:/var/www/
+  #   ports:
+  #     - "7423:8423"
+  #   environment:
+  #     NODE_ENV: dev
+  #     BUILD_VERSION: 0.51
+  #     MYSQL_ROOT_PASSWORD: docker
+  #     MYSQL_USER: serviceuser
+  #     MYSQL_PASSWORD: serviceuser23password
+  #     MYSQL_DATABASE: serv
+  #   networks:
+  #     - frontendNetwork
+  #     - backendNetwork
+
+  # sqldb:
+  #   image: mariadb
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: docker
+  #     MYSQL_USER: serviceuser
+  #     MYSQL_PASSWORD: serviceuser23password
+  #     MYSQL_DATABASE: serv
+  #   networks:
+  #     - backendNetwork
+  #   volumes:
+  #     - ./data/maria:/var/lib/mysql
+
+networks:
+  frontendNetwork:
+  backendNetwork:
