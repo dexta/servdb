@@ -44,8 +44,8 @@ const retrysql = () => {
 
 async function newTestStack() {
   // let testConections = await sql.testDbConection();
-  let testTable = await sql.testDbTable('servtable');
-  let tableColumns = await sql.showColumnsFrom('servtable');
+  let testTable = await sql.testDbTable('version');
+  let tableColumns = await sql.showColumnsFrom('version');
   // console.dir(testTable);
   // console.dir(tableColumns);
   let testVersion = {};
@@ -59,7 +59,7 @@ async function newTestStack() {
   console.log(testCreate);
 };
 
-newTestStack();
+// newTestStack();
 
 // retrysql();
 

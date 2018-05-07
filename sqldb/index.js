@@ -3,6 +3,10 @@ const async = require('async');
 
 // const filehandler = require('./filehandler.js');
 const sqlAPI = require('./sqlAPI.js');
+const schemeAPI = require('./sqlScheme.js');
+const sql_config = require('./config.js');
+
+// console.dir(sql_config.db[0].tables[0].cols);
 
 let db_config = {};
 
@@ -107,111 +111,52 @@ rdb.insertData = function insertData(data,callback) {
   rdb.query(inQuery,callback);
 };
 
-
-// test the database, tables and insert/selcet
-
-// rdb.testDbConection = function testDbConection() {
-//   return new Promise( (resolve, reject) => {
-//     this.connection.connect( (err, data) => {
-//       if (err) reject(err);        
-//       resolve(this.connection.threadId);
-//     });
-//   });
-// };
-
-rdb.testDbTable = async (tableName) => {
-  let doesItExist = await rdb.pquery(`SELECT * FROM ${tableName} LIMIT 1;`);
-  if(doesItExist.length===0) {
-    console.log(`no table with name ${tableName}`);
-  } else {
-    console.log(`some table here with name: ${tableName}`);
-    console.dir(doesItExist);
-  }
-  return doesItExist;
-};
-
-rdb.showColumnsFrom = async (nameTable) => {
-  let columns = await rdb.pquery(`show columns from ${nameTable}; `);
-  if(columns.length===0) {
-    console.log(`no columns in table with name ${nameTable}`);
-  } else {
-    console.log(`table here with name: ${nameTable} columns`);
-    console.dir(columns);
-  }
-  return columns;
-};
-
-
-rdb.createTable = async (createObj) => {
-  // DROP TABLE IF EXISTS `history`;
-    
-  // CREATE TABLE `history` (
-  //   `id` INTEGER NOT NULL AUTO_INCREMENT,
-  //   `key` VARCHAR(3072) NOT NULL,
-  //   `value` VARCHAR(3072) NOT NULL,
-  //   PRIMARY KEY (`id`)
-  // );
-  // createObj = {};
-  // createObj.dropTable=true;
-  // createObj.tableName='history';
-  // createObj.primaryKey='id';
-  // createObj.col = [];
-  // createObj.col[0] = {name:'id',type:'INTEGER',options:' NOT NULL AUTO_INCREMENT'};
-  // createObj.col[1] = {name:'key',type:'VARCHAR(3072)',options:'NOT NULL'},
-  // createObj.col[2] = {name:'value',type:'VARCHAR(3072)',options:'NOT NULL'},
-  // createObj.col[3] = {name:'',type:'',options:''},
-
-  console.log("create Object ");
-  console.dir(createObj);
-
-  let createQuery = '';
-  let colList = '';
-  if(createObj.dropTable) {
-    let dropedTable = await rdb.pquery('DROP TABLE IF EXISTS `'+createObj.tableName+'`;');
-    console.log(`dropping table ${createObj.tableName}`);
-    console.dir(dropedTable);
-  }
-
-  for(let c=0,cl=createObj.col.length;c<cl;c++) {
-    let colI = createObj.col[c];
-    colList += '`'+colI.name+'` '+colI.type+' '+colI.options+',';
-  }
-  colList += 'PRIMARY KEY (`'+createObj.primaryKey+'`)';
-
-  createQuery += 'CREATE TABLE `'+createObj.tableName+'` (';
-  createQuery += colList;
-  createQuery += ');'
-  
-  console.log("create Table Query");
-  console.log(createQuery);
-
-  let crtaCall = await rdb.pquery(createQuery);
-  return crtaCall;
-};
-// end the testing of databse, tables and select/inserts
-
-
-
-
-rdb.insertOne = async function insertOne(data) {
+rdb.insertOne = async (data) => {
   return await sqlAPI.insertEntry(rdb, data);
 };
 
-rdb.searchByKey = async function searchByKey(key) {
+rdb.searchByKey = async (key) => {
   return sqlAPI.searchKey(rdb, key);
 };
 
-rdb.searchByValue = async function searchByValue(value) {
+rdb.searchByValue = async (value) => {
   return sqlAPI.searchValue(rdb, value);
 };
 
-rdb.getOneValue = async function getOneValue(key) {
+rdb.getOneValue = async (key) => {
   return sqlAPI.getOneValue(rdb, key);
 };
 
-rdb.searchKeyValLimit = async function searchKeyValLimit(options) {
+rdb.searchKeyValLimit = async (options) => {
   return sqlAPI.searchKeyValLimit(rdb,options);
 };
+
+
+// be sure we have the right scheme for our database
+rdb.testDbTable = async (tableName) => {
+  return schemeAPI.testDbTable(rdb,tableName);
+};
+
+rdb.showColumnsFrom = async (tableName) => {
+  return schemeAPI.showColumnsFrom(rdb,tableName);
+};
+
+rdb.createTable = async (createObject) => {
+  return schemeAPI.createTable(rdb,createObject);
+};
+
+rdb.checkSQLstate = async (ckObj) => {
+  return schemeAPI.checkSQLstate(rdb,ckObj);
+};
+
+// 
+// test database with config schema
+// 
+rdb.checkSQLstate(sql_config);
+// 
+// end testing database schema
+// 
+
 
 // and export all
 module.exports = rdb;
