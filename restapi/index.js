@@ -24,7 +24,32 @@ const generateEnvVariables = (jobj,options) => {
   }
   return outStr;
 };
+// rdb.pquery = function pquery(sql,args) {
+//   return new Promise( ( resolve, reject ) => {
+//       this.connection.query( sql, args, ( err, rows ) => {
+//           if ( err )
+//               return reject( err );
+//           resolve( rows );
+//       });
+//   });
+// };
 
+const oneFourAll = async (type, req, res) => {  
+  let opts = {limit:100,by:'key',base:'',key:'',export:false};
+  for(let o in opts) {
+    if(req.params[o]!=''||false) {
+      opts[o] = req.params[o];
+    }
+  }
+  if( opts.base==='' || opts.key==='' ) {
+    return res.status(404).json({err:'base || key missing'});
+  } 
+
+  opts.search = opts.base+opts.key;
+  let searchResulutes = await sql.searchKeyValLimit(opts);
+  
+  res.status(200).send(generateEnvVariables(searchResulutes,{base:opts.base,tail:opts.key,export:opts.export}));
+};
 
 app.get('/insert/simple/:key/:value', async (req, res)=> {
   let data = {key:req.params.key,value:req.params.value};
@@ -76,6 +101,12 @@ app.get('/env/:limit/:base/:key', async (req, res) => {
 
   res.status(200).send(generateEnvVariables(searchResulutes,{base:req.params.base,tail:req.params.key,export:false}));
 });
+
+
+app.get('/env/:limit/:base/:key/:export', async (req, res) => {
+  oneFourAll('env',req, res);
+});
+
 
 app.get('/env/:base/:key', async (req, res) => {
   let fullKey = `${req.params.base}.${req.params.key}`;
