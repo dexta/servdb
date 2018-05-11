@@ -17,16 +17,26 @@ type Conf struct {
   Path  string
   Type  string
   Outp  string
+  Base  string
   Limit string
+  Export  bool
+  OOne    bool
 }
 
 var config Conf
+
+func IfThenElse(condition bool, a interface{}, b interface{}) interface{} {
+  if condition {
+    return a
+  }
+  return b
+}
 
 func main() {
   
   app := cli.NewApp()
   app.Name = "servDB"
-  app.Usage = "ask one how can know it !"
+  app.Usage = "ask one who can know it !"
   app.Version = "0.0.3"
 
   app.Flags = []cli.Flag {
@@ -57,7 +67,7 @@ func main() {
     },
     cli.StringFlag{
       Name: "path",
-      Usage: "set the output type eg. text,json or env vars",
+      Usage: "set rest path of request",
     },
     cli.StringFlag{
       Name: "type, t",
@@ -71,6 +81,10 @@ func main() {
       Name: "config, c",
       Value: "servconfig.json",
       Usage: "override the configfile path",
+    },
+    cli.BoolFlag{
+      Name: "export, E",
+      Usage: "if output format is env than add export infront of all vars",
     },
   }
 
@@ -90,13 +104,13 @@ func main() {
       searchOutp = c.String("output")
     }
 
-    searchOne := false
+    searchOne := config.OOne
     if c.Bool("onlyone") {
       // urlString = fmt.Sprintf("%s:%s/onevalue/%s",searchHost,searchPort,url.QueryEscape(searchString))
       searchOne = true
     }
 
-    searchBase := ""
+    searchBase := config.Base
     if c.String("base") != "" {
       searchBase = c.String("base")
     }
@@ -121,11 +135,18 @@ func main() {
       searchType = c.String("type")
     }
 
-    searchLimit := config.Limit
+
+    searchLimit := IfThenElse((config.Limit!=""),string(config.Limit),"100")
+    // searchLimit := "100"
+    // searchLimit := config.Limit
     if c.String("limit") != "" {
       searchLimit = c.String("limit")
     }
 
+    searchExport := config.Export
+    if c.Bool("export") {
+      searchExport = true
+    }
 
 
     // URLs for diffrent needs
@@ -133,11 +154,17 @@ func main() {
 
     if searchOutp=="env" && searchBase != "" {
       if(searchOne) { searchLimit = "1" }
-      urlString = fmt.Sprintf("%s:%s/env/%s/%s/%s",searchHost,searchPort,searchLimit,searchBase,url.QueryEscape(searchString))
+      if(searchExport) {
+        urlString = fmt.Sprintf("%s:%s/env/%s/%s/%s/true",searchHost,searchPort,searchLimit,searchBase,url.QueryEscape(searchString))
+      } else {
+        urlString = fmt.Sprintf("%s:%s/env/%s/%s/%s",searchHost,searchPort,searchLimit,searchBase,url.QueryEscape(searchString))
+      }
+
     } else if searchOutp=="json" {
       urlString = fmt.Sprintf("%s:%s/search/%s/%s/%s",searchHost,searchPort,searchType,searchLimit,url.QueryEscape(searchString))
     }
-    // fmt.Println("fire the url string")
+    fmt.Println("fire the url string")
+    fmt.Println(urlString)
     fmt.Println( getURL( urlString)  )
     // fmt.Println("end of active stuff")
     // fmt.Println(getURL("http://localhost:7423/onevalue/service.%25.version"))
