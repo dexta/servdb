@@ -76,6 +76,30 @@ shema.createTable = async (db,createObj) => {
   return crtaCall;
 };
 
+shema.testKeysValues = async (db,tabname,keyval,testonly) => {
+  if(keyval.cols.length!=keyval.vals.length) return {err:'diffrent '};
+  let justtest = (testonly||false)? true : false;
+  let sel = `SELECT * FROM ${tabname} WHERE `;
+  let insK = `INSERT INTO ${tabname} (`;
+  let insV = ` VALUES (`;
+  for(let kv=0,kvl=keyval.cols.length;kv<kvl;kv++) {
+    sel += '`'+keyval.cols[kv]+'` = "'+keyval.vals[kv]+'"';
+    insK += (kv!=0)? ',':'';
+    insK += ' `'+keyval.cols[kv]+'`';
+    insV += (kv!=0)? ',':'';
+    insV += ' "'+keyval.vals[kv]+'"';
+  }
+  insK += ')';
+  insV += ')';
+  
+  let urThere = await db.pquery(sel);
+  if( urThere.length===0 ) {
+    if(justtest) return true;
+    await db.pquery(insK+' '+insV);
+    return true;
+  }
+  return false;
+};
 
 shema.checkSQLstate = async (db,ckObj) => {
   console.log("start check the state");
@@ -83,7 +107,6 @@ shema.checkSQLstate = async (db,ckObj) => {
 
   for(let a in ckObj.db[0].tables) {
     let tab = ckObj.db[0].tables[a];
-    console.log("table name "+tab.Name);
     let hasTable = await shema.testDbTable(db,tab.Name);
     if(hasTable.err||false) {
       let crOb = {dropTable:true,tableName:tab.Name,primaryKey:tab.cols[0].Field,col:[]};
@@ -93,11 +116,13 @@ shema.checkSQLstate = async (db,ckObj) => {
       }
       await shema.createTable(db,crOb);
     }
-    // console.log(hasTable);
-    // console.dir(tab);
+
+    if(tab.init||false) {
+      for(let i in tab.init) {
+        await shema.testKeysValues(db,tab.Name,tab.init[i]);
+      }
+    }
   }
-
-
 
   console.log("end check the state");
   return;
