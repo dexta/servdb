@@ -114,6 +114,16 @@ app.get('/env/:base/:key', async (req, res) => {
 
   res.status(200).send(generateEnvVariables(searchResulutes,{base:req.params.base,tail:req.params.key,export:true}));
 });
+
+
+app.get('/history/:keyval/:limit/:value', async (req, res) => {
+  let hQuery = 'SELECT * FROM `history`';
+  hQuery    += ' WHERE `'+req.params.keyval+'`'
+  hQuery    += ` LIKE '${req.params.value}' LIMIT ${req.params.limit};`;
+  console.log("history sql: "+hQuery);
+  let history = await sql.pquery(hQuery);
+  res.status(200).json(history);
+});
 // --
 // ----
 // ------

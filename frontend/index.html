@@ -40,12 +40,19 @@
   </div>
  -->
 
-  <div class="row" id="editLine">
+ <div class="d-flex align-content-around flex-wrap">
+<!--   <div id="historyLine">
+   <div class="d-flex flex-column" id="editCompo_23">
+    <historyTable number="1" color="danger"></historyTable>
+   </div>
+  </div> -->
+
+  <div id="editLine">
   </div>
 
-  <div class="row" id="viewLine">
+  <div id="viewLine">
   </div>
-
+ </div>
 </div>
 
 <!-- include extern librarys -->
@@ -76,7 +83,8 @@
     let newComp = (type==='edit')? "enterupdatekeyvalue" : "keyvalueTable";
     let newElement = document.createElement(newComp);
     let count = store[type+"Count"];
-    divC.className = "col-lg-6 col-md-12 col-sm-12 bg-light";
+    // divC.className = "col-lg-6 col-md-12 col-sm-12 bg-light";
+    divC.className = "d-flex flex-wrap";
     divC.setAttribute("id", "editCompo_"+count);
     btnQ.className = "btn btn-secondary";
     btnQ.innerHTML = "no. #"+count;
@@ -92,11 +100,15 @@
   }
 
   setTimeout( ()=> {
-    addSome('edit');
-    addSome('edit');
+    // addSome('edit');
+    // addSome('view');
     addSome('view');
-    addSome('view');
+    // addSome('edit');
+
   },1000);
+
+
+
 </script>
 
 </body>

@@ -5,6 +5,52 @@
 <button class="btn btn-prinmary" onclick={ showhide } id="showhide_filter">Filter</button>
 <button class="btn btn-danger" onclick={ showhide } id="showhide_shorter">Shorterkey</button>
 
+
+<div class="pull-right">
+  <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+          onclick={ toggleOptions } id="optionBtn_{opts.number}">
+    <i class="fa fa-gear"></i>
+  </button>
+  <div class="dropdown-menu" id="showhide_options_{opts.number}">
+    <table class="table table-hover">
+      <tr each={name in optionsNames}>
+        <td>
+          { name }
+        </td>
+        <td>
+          <button if={state[toLow(name)]||state[toLow(name)]===false} 
+                  class="btn btn-sm pull-right { state[toLow(name)]? 'btn-success' : 'btn-danger' }"
+                  onclick={ stateSwitch(toLow(name)) }>
+            <i class="fa { state[toLow(name)]? 'fa-check-square' : 'fa-plus-square'  } "></i>
+          </button>
+        </td>
+      </tr>
+    </table>
+
+
+<!--     <div class="dropdown-item" each={name in optionsNames}>
+      { name }
+      <span if={state[toLow(name)]||state[toLow(name)]===false} class="btn btn-sm { state[toLow(name)]? 'btn-success' : 'btn-danger' }">
+        <i class="fa { state[toLow(name)]? 'fa-check-square' : 'fa-plus-square'  } "></i>
+      </span>
+    </div> -->
+
+    <!-- <div class="dropdown-item" >History 
+      <span class="btn btn-sm pull-right { state.history? 'btn-danger' : 'btn-success' }"><i class="fa fa-plus-square"></i></span>
+    </div>
+    <div class="dropdown-item" href="#">Another action
+      <span class="btn btn-sm pull-right { state.history? 'btn-danger' : 'btn-success' }"><i class="fa fa-plus-square"></i></span>
+    </div>
+    <div class="dropdown-item" href="#">Something else here
+      <span class="btn btn-sm pull-right { state.history? 'btn-danger' : 'btn-success' }"><i class="fa fa-plus-square"></i></span>
+    </div>
+    <div role="separator" class="dropdown-divider"></div>
+    <div class="dropdown-item" href="#">Separated link
+      <span class="btn btn-sm pull-right { state.history? 'btn-danger' : 'btn-success' }"><i class="fa fa-plus-square"></i></span>
+    </div> -->
+  </div>
+</div>
+
 <hr>
 
 <form if={openclose.shorter} onsubmit={ setShorter }>
@@ -74,8 +120,9 @@
   let that = this;
   this.kvlist = [];
   this.rawList = [];
-  this.openclose = {filter:false,search:true,shorter:false};
-  this.state = {filter:'service.',search:'service.%25',searchlimit:100};
+  this.openclose = {filter:false,search:true,shorter:false,options:false};
+  this.state = {filter:'service.',search:'service.%25',searchlimit:100,history:false,autoclose:true};
+  this.optionsNames = ['History','AutoClose','-----------','Save','Load'];
 
   this.shorterList = ()=> {
     this.kvlist = this.rawList.map( (l)=> { return { key: l.key.replace(this.state.shorter,''), value: l.value } } );
@@ -86,7 +133,9 @@
   };
 
   this.getKVList = (strtoget) => {
-    superagent('get',"/search/key/"+this.state.searchlimit+"/"+strtoget).then( (res) => {
+    let soh = (!this.state.history)? 'search' : 'history'; 
+    let urlString = `/${soh}/key/${this.state.searchlimit}/${strtoget}`;
+    superagent('get',urlString).then( (res) => {
     	that.kvlist = res.body;
       that.rawList = res.body;
     	that.update();
@@ -101,7 +150,7 @@
     this.state.shorter = this.refs.shorterstring.value;
     this.shorterList();
     console.dir(this.kvlist);
-    this.openclose.shorter = false;
+    if(this.state.autoclose) this.openclose.shorter = false;
     this.update();
   };
 
@@ -110,7 +159,7 @@
     this.state.search = this.refs.searchstring.value;
     this.state.searchlimit = this.refs.searchlimit.value;
     this.getKVList(this.state.search);
-    this.openclose.search = false;
+    if(this.state.autoclose) this.openclose.search = false;
     this.update();
   };
 
@@ -118,23 +167,55 @@
     e.preventDefault();
     this.state.filter = this.refs.filterstring.value;
     this.filterList();
-    this.openclose.filter = false;
+    if(this.state.autoclose) this.openclose.filter = false;
     this.update();
   }
 
   this.showhide = (e) => {
     e.preventDefault();
     let clElem = e.srcElement.id.split('_')[1];
-    this.openclose = {filter:false,search:false,shorter:false};
+    this.openclose = {filter:false,search:false,shorter:false,options:false};
     this.openclose[clElem] = true;
     console.dir(clElem);
   };
 
+  this.toggleOptions = (e) => {
+    e.preventDefault();
+    let opEle = document.getElementById('showhide_options_'+this.opts.number);
+    // let newState = (opEle.style.display===''||opEle.style.display==='none')? 'block' : 'none';  
+    let btEle = document.getElementById('optionBtn_'+this.opts.number);
+    // console.dir(opEle);
+    if(opEle.style.display===''||opEle.style.display==='none') {
+      opEle.style.display = 'block';
+      opEle.style.top = (btEle.offsetHeight+btEle.offsetTop)+"px";
+      opEle.style.left = (btEle.offsetLeft-opEle.offsetWidth+btEle.offsetWidth) +"px";
+    } else {
+      opEle.style.display = 'none';
+    }
+    // console.dir(btEle);
+  };
+
+  this.toLow = (tolower) => {
+    return tolower.toLowerCase();
+  };
+
+  this.stateSwitch = (stateName) => {
+    return () => {
+      this.state[stateName] = !(this.state[stateName]);
+    }
+  };
+
   this.countTheLen = () => {
     return that.kvlist.length;
-  }
+  };
 
-
+  this.onoroff = (tof) => {
+    if(tof) {
+      return '<span class="btn btn-success"><i class="fa fa-check-square"></i></span>';
+    } else {
+      return '<span class="btn btn-danger"><i class="fa fa-plus-square"></i></span>';
+    }
+  };
 
 
 </script>
