@@ -1,8 +1,8 @@
 <keyvalueTable>
 <h4 class="bg-{opts.color}">#{opts.number}</h4>
-<hr>
+<!-- <hr> -->
 <button class="btn btn-info" onclick={ showhide } id="showhide_search">Search</button>
-<button class="btn btn-prinmary" onclick={ showhide } id="showhide_filter">Filter</button>
+<button class="btn btn-warning" onclick={ showhide } id="showhide_filter">Filter</button>
 <button class="btn btn-danger" onclick={ showhide } id="showhide_shorter">Shorterkey</button>
 
 
@@ -51,9 +51,9 @@
   </div>
 </div>
 
-<hr>
+<!-- <hr> -->
 
-<form if={openclose.shorter} onsubmit={ setShorter }>
+<form if={openclose.shorter} onsubmit={ setShorter } class="fakeTab bg-danger">
   <div class="col-auto">
     <label class="sr-only" for="shorterinputfield">Shorter</label>
     <div class="input-group mb-2">
@@ -65,7 +65,7 @@
   </div>
 </form>
 
-<form if={openclose.filter} onsubmit={ setFilter }>
+<form if={openclose.filter} onsubmit={ setFilter } class="fakeTab bg-warning">
   <div class="col-auto">
     <label class="sr-only" for="filterinputfield">filter</label>
     <div class="input-group mb-2">
@@ -78,7 +78,7 @@
 </form>
 
 
-<form if={openclose.search} onsubmit={ setSearch }>
+<form if={openclose.search} onsubmit={ setSearch } class="fakeTab bg-info">
   <div class="form-inline">
     <label class="sr-only" for="filterinputfield">search</label>
     <div class="input-group col-sm-8">
@@ -96,7 +96,7 @@
   </div>
 </form>
 
-<hr>
+<!-- <hr> -->
 
 <table class="table">
   <caption>Count of key value { countTheLen() }</caption>
@@ -219,5 +219,12 @@
 
 
 </script>
+
+<style>
+.fakeTab {
+  padding-top: 15px;
+}
+
+</style>
 
 </keyvalueTable>
