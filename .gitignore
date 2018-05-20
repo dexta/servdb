@@ -3,3 +3,4 @@ keys/
 data/
 config.js
 .env
+servconfig.json

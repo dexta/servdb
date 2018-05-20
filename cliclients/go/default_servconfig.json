@@ -1,0 +1,11 @@
+{
+  "Host": "http://localhost",
+  "Port": "7423",
+  "Path": "search/key",
+  "Type": "key",
+  "Outp": "env",
+  "Base": "service.",
+  "Limit": "100",
+  "Export": false,
+  "OOne": false
+}
