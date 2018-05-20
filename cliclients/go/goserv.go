@@ -1,7 +1,9 @@
 package main
 
 import (
+  "bufio"
   "fmt"
+  "strings"
   "os"
   "log"
   "encoding/json"
@@ -71,7 +73,7 @@ func main() {
     },
     cli.StringFlag{
       Name: "type, t",
-      Usage: "change the seach for key<->value",
+      Usage: "change the search for key<->value",
     },
     cli.StringFlag{
       Name: "limit, l",
@@ -85,6 +87,10 @@ func main() {
     cli.BoolFlag{
       Name: "export, E",
       Usage: "if output format is env than add export infront of all vars",
+    },
+    cli.StringFlag{
+      Name: "template, tpl",
+      Usage: "replace ${vars} inside template file",
     },
   }
 
@@ -148,6 +154,10 @@ func main() {
       searchExport = true
     }
 
+    searchTemplate := ""
+    if c.String("template") != "" {
+      searchTemplate = c.String("template")
+    }
 
     // URLs for diffrent needs
     urlString := fmt.Sprintf("%s:%s/%s/%s",searchHost,searchPort,searchPath,url.QueryEscape(searchString))
@@ -163,6 +173,22 @@ func main() {
     } else if searchOutp=="json" {
       urlString = fmt.Sprintf("%s:%s/search/%s/%s/%s",searchHost,searchPort,searchType,searchLimit,url.QueryEscape(searchString))
     }
+
+    if(searchTemplate != "") {
+      multLine := getURL(urlString)
+      replMap := map[string]string{}
+      for _, line := range strings.Split(strings.TrimSuffix(multLine, "\n"), "\n") {
+        keyVal := strings.Split(line, "=")
+        replMap[keyVal[0]] = keyVal[1]
+      }
+      // fmt.Println(replMap)
+
+      openTemplate(searchTemplate, replMap)
+
+      return nil
+    }
+
+
     fmt.Println("fire the url string")
     fmt.Println(urlString)
     fmt.Println( getURL( urlString)  )
@@ -190,6 +216,36 @@ func readConfig(filename string) Conf {
   }
   // fmt.Println(configuration)
   return configuration
+}
+
+func openTemplate(filename string, replst map[string]string) string {
+  file, err := os.Open(filename)
+  if err != nil {
+    if os.IsNotExist(err) {
+      log.Fatal("File does not exist.")
+    } else if os.IsPermission(err) {
+      log.Println("Error: Read permission denied.")
+    } else {
+      fmt.Println(err)  
+    }
+    
+    os.Exit(1)
+  }
+  defer file.Close()
+
+  scanner := bufio.NewScanner(file)
+  for scanner.Scan() {
+    wrkLine := scanner.Text()
+    for k, v := range replst {
+      sStringKey := "${"+k+"}"
+      temlLine := strings.Replace(wrkLine, sStringKey, v, -1)
+      wrkLine = temlLine
+    }
+    fmt.Println(wrkLine)
+  }
+
+
+  return ""
 }
 
 func getURL(url string) string {
