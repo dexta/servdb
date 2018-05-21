@@ -98,7 +98,9 @@
   });
 
   this.insertKeyVal = (key,val) => {
-    let getURL = `/insert/simple/${key}/${val}`;
+    let uKey = encodeURIComponent(key);
+    let uVal = encodeURIComponent(val);
+    let getURL = `/insert/simple/${uKey}/${uVal}`;
     return superagent('get',getURL).then( (res) => { return res.body; } );
   };
 
