@@ -52,8 +52,8 @@ func main() {
       Usage: "set the output type eg. text,json or env vars",
     },
     cli.BoolFlag{
-      Name: "onlyone, O",
-      Usage: "the first match will return just One",
+      Name: "onlyval, O",
+      Usage: "return just the value",
     },
     cli.StringFlag{
       Name: "base, b",
@@ -186,12 +186,18 @@ func main() {
       openTemplate(searchTemplate, replMap)
 
       return nil
+    } else if(searchOne) {
+      toCut := getURL( urlString)
+      isCut := strings.Split(strings.TrimSuffix(toCut, "\n"), "\n")[0]
+      fmt.Println( strings.Split(isCut,"=")[1] )
+    } else {
+      fmt.Println( getURL( urlString)  )    
     }
 
 
-    fmt.Println("fire the url string")
-    fmt.Println(urlString)
-    fmt.Println( getURL( urlString)  )
+    // fmt.Println("fire the url string")
+    // fmt.Println(urlString)
+    
     // fmt.Println("end of active stuff")
     // fmt.Println(getURL("http://localhost:7423/onevalue/service.%25.version"))
     // fmt.Println(getURL("http://localhost:7423/search/key/service.hellodocker%25"))
