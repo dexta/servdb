@@ -124,6 +124,23 @@ app.get('/history/:keyval/:limit/:value', async (req, res) => {
   let history = await sql.pquery(hQuery);
   res.status(200).json(history);
 });
+
+
+app.get('/base/:depth', async (req, res) => {
+  let bQuery = "SELECT DISTINCT SUBSTRING_INDEX(`key`,'.',"+req.params.depth+") AS Bases FROM servtable;";
+  let bases = await sql.pquery(bQuery);
+  let reOut = [];
+  for(let b in bases) {
+    let spBa = bases[b].Bases.split('.');
+    for(let s in spBa) {
+      if(reOut[s]===undefined) reOut[s] = ['---select-all---','---select-none---'];
+      if(reOut[s].indexOf(spBa[s])===-1) {
+        reOut[s].push(spBa[s]);
+      }
+    }
+  }
+  res.status(200).json(reOut);
+});
 // --
 // ----
 // ------

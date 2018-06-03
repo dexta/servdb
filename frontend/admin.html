@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>serv-DB-admin</title>
+    <link rel="icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <link rel="stylesheet" href="css/custom.css">
+  </head>
+<body>    
+
+<div class=" container-fluid">
+ <div class="row">
+  <div class="col-3">
+    <alloptions>
+    </alloptions>
+  </div>
+  <div class="col-9">
+    <allviews>
+    </allviews>
+  </div>
+ </div>
+</div>
+
+<!-- include extern librarys -->
+<script src="js/superagent.js"></script>
+<script src="js/riotux.js"></script>
+<script src="js/riotrage.js"></script>
+
+<!-- include components -->
+<script src="components/tableview.tag" type="riot/tag"></script>
+<script src="components/matrixview.tag" type="riot/tag"></script>
+<script src="components/searchoptions.tag" type="riot/tag"></script>
+<script src="components/baseoptions.tag" type="riot/tag"></script>
+<script src="components/envireditoptions.tag" type="riot/tag"></script>
+<script src="components/alloptions.tag" type="riot/tag"></script>
+<script src="components/allViews.tag" type="riot/tag"></script>
+
+<!-- include riot.js and the compiler -->
+<script src="js/riot+compiler.js"></script>
+
+<!-- <script src="js/indexed.js"></script> -->
+
+<script type="text/javascript">
+  riot.mount('*');
+
+
+  let store = riotux.Store({
+    state: {
+      count: 1,
+      search: {
+        text: '%',
+        limit: 32,
+        base:'',
+        baseon: false,
+        cutbase:false,
+      },
+      kvlist: [],
+      baseListMatrix: [],
+      bases: [],
+      basedepth: 4,
+      baseselect: [],
+      basematrix: {cols:["%","%","%","host"],rows:["%","%","%"]},
+    },
+    mutations: {  
+      increment: function( state ) {
+        state.count += 1; 
+      },
+      updateSearch: function( state, key, val ) {
+        state.search[key] = val;
+      },
+      setKVlist: function(state, newKeyValueList) {
+        state.kvlist = newKeyValueList;
+      },
+      setBases: function(state, newBases) {
+        state.bases = newBases;
+      },
+      updateBaseDepth: function(state, newBaseDepth) {
+        state.basedepth = newBaseDepth;
+      },
+      updateBaseSelect: function(state, indexNo, newValue) {
+        // if(state.baseselect[indexNo]===undefined) state.baseselect[indexNo] = {name:''};
+        state.baseselect[indexNo] = newValue;
+      },
+      setBaseSelect: function(state, newSelects) {
+        state.baseselect = newSelects;
+      },
+      setBasematrix: function(state, newCode) {
+        if(!newCode.cols||!newCode.rows||true) return;
+        state.basematrix = newCode;
+      },
+      setBaseListMatrix: function(state, newBLM) {
+        state.baseListMatrix = newBLM;
+      },
+    }
+  });
+  
+  let action = riotux.Actions({
+    getList: ( store, state ) => {
+      if(state===undefined) return;
+      let baseString = (state.search.base||false)? state.search.base : '';
+      let searchText = encodeURIComponent(baseString + state.search.text);
+      let urlString = '/search/key/'+state.search.limit+'/'+searchText;
+      superagent('get',urlString).then( (res) => {
+        store.dispatch('setKVlist', res.body);
+        console.log("read kvlist done !!!");
+      });
+    },
+    getBaseList: (store, state, searchString) => {
+      let urlString = '/search/key/'+state.search.limit+'/'+encodeURIComponent(searchString);
+      superagent('get',urlString).then( (res) => {
+        store.dispatch('setBaseListMatrix', res.body);
+      });
+    },
+    setSearch: (store, key, val) => {
+      store.dispatch('updateSearch', key, val);
+    },
+    getBases: (store, state) => {
+      let urlString = '/base/'+state.basedepth;
+      superagent('get',urlString).then( (res) => {
+        for(let b in res.body) {
+          store.dispatch('updateBaseSelect', b, res.body[b][0]);
+        }
+        store.dispatch('setBases', res.body);
+      });      
+    },
+    setBaseDepth: (store, newBaseDepth) => {
+      store.dispatch('updateBaseDepth', newBaseDepth);
+    },
+    setBaseSelect: (store, newValue) => {
+      store.dispatch('setBaseSelect', newValue);
+    },
+    setBasematrix: (store, newBaseCode) => {
+      store.dispatch('setBasematrix',newBaseCode);
+    },
+
+  }); 
+  
+  riotux.action('kvlist', 'getList', store.state);
+  riotux.action('bases', 'getBases', store.state);
+
+  const copyEnvs = (envName,toEnvName,limit) => {
+    let cUrl = 'search/key/';
+    cUrl += (limit||false)? `${limit}/` : '';
+    cUrl += `%25.${envName}.%25`;
+    superagent('get',cUrl).then( (res) => {
+      // console.log(res.body);
+      for(let i in res.body) {
+        let reKey = res.body[i].key.replace(envName,toEnvName);
+        console.log(reKey,res.body[i].value);
+        let uKey = encodeURIComponent(reKey);
+        let uVal = encodeURIComponent(res.body[i].value);
+        let getURL = `/insert/simple/${uKey}/${uVal}`;
+        superagent('get',getURL).then( (res) => { console.log(res.body); } );
+      }
+    });
+  };
+
+
+  // const getKVList = (strtoget) => {
+  //   let urlString = '/search/key/100/'+strtoget;
+  //   superagent('get',urlString).then( (res) => {
+  //     store.kvlist = res.body;
+  //     store.rawList = res.body;
+  //   });
+  // };
+  // getKVList('%25');
+
+</script>
+
+</body>
+</html>
