@@ -100,8 +100,7 @@
     <div class="input-group col-sm-6">
       <button class="btn btn-danger pull-right">send Search</button>
     </div> -->
-  
-  <!-- </div> -->
+    <!-- </div> -->
 
 </form>
 <script>
