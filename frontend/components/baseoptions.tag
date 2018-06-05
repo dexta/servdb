@@ -46,7 +46,7 @@ this.open = (opts.open==="true")? true : false;
 
 this.bases = [];
 this.select = [];
-this.basedepth = 3;
+this.basedepth = 4;
 this.basematrix = {cols:[],rows:[]};
 
 riotux.subscribe(that, 'bases', function ( state, state_value ) {

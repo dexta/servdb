@@ -11,8 +11,17 @@
         <td>{row.row}</td>
         <td each={ cols, colinx in baseSortTable.cols}>
           <div if={row.cols[cols]} class="form-group row">
-            <div class="col-12">
+            <div class="col-8">
               <input type="text" class="form-control" aria-label="{ row.key }" disabled value="{ row.cols[cols] }">
+            </div>
+            <div class="col-2">
+              <div class="btn-group" role="group" aria-label="Save or Cancel">
+              <button class="btn btn-danger">
+                <i class="fa fa-save"></i>
+              </button>
+              <button class="btn btn-success">
+                <i class="fa fa-undo"></i>
+              </button>
             </div>
           </div>
           <!-- <td each={ oneline, itemindex in lines}>{oneline.col} - {oneline.value}</td> -->
@@ -38,6 +47,7 @@ riotux.subscribe(that, 'basematrix', function ( state, state_value ) {
   // that.shortEditRow = state_value.rows.join('.').replace(/\.\$/g,'');
   // that.shortEditCol = state_value.cols.join('.').replace(/\.\$/g,'');
   that.basematrix = riotux.getter('basematrix');
+
   // that.mergeRowCol();
   that.update();
 });
@@ -45,29 +55,46 @@ riotux.subscribe(that, 'basematrix', function ( state, state_value ) {
 
 riotux.subscribe(that, 'baseListMatrix', function ( state, state_value ) {
   that.baseListMatrix = riotux.getter('baseListMatrix');
-  // console.log('base matrix list');
-  // console.dir(that.baseListMatrix);
-  that.bigCopyMatrix();
+  that.bigCopyMatrix(state_value);
   that.update();
 });
 
-this.bigCopyMatrix = () => {
-  let higherOrderMatrix = that.baseListMatrix
-   .map(
-    (o) => { 
-      return {
-        key:o.key.replace("service.hellodocker.",""),
-        value:o.value} 
-      })
-   .map(
-    (n) => { 
-      return {
-        col:n.key.split('.')[n.key.split('.').length-1],
-        row:n.key.split('.').slice(0,n.key.split('.').length-1).join('.'),
-        key:n.key,
-        value:n.value 
-      } 
-    });
+this.bigCopyMatrix = (toSmallMatrix) => {
+
+  // let higherOrderMatrix = that.baseListMatrix
+  //  .map(
+  //   (o) => { 
+  //     return {
+  //       key:o.key.replace("service.hellodocker.",""),
+  //       value:o.value} 
+  //     })
+  //  .map(
+  //   (n) => { 
+  //     return {
+  //       col:n.key.split('.')[n.key.split('.').length-1],
+  //       row:n.key.split('.').slice(0,n.key.split('.').length-1).join('.'),
+  //       key:n.key,
+  //       value:n.value 
+  //     } 
+  //   });
+
+  let higherOrderMatrix = [];
+  for(let h in toSmallMatrix) {
+    let tmpO = {key:toSmallMatrix[h].key,col:'',row:'',value:toSmallMatrix[h].value};
+    let kList = tmpO.key.split('.');
+    tmpO.col = kList.pop();
+    let rowCutList = that.basematrix.rows;
+    let newKey = '';
+    for(k in kList) {
+      if(kList[k]!=rowCutList[k]) {
+        newKey += kList[k] + '.';
+      }
+    }
+    tmpO.row = newKey.replace(/\.$/,'');
+    // tmpO.col = tmpO.key.split('.').slice(0,n.key.split('.').length-1).join('.');
+    higherOrderMatrix.push(tmpO);
+  }
+  console.log('new lower order funktion');
   console.dir(higherOrderMatrix);
 
 

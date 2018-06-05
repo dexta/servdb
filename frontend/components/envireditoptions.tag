@@ -65,8 +65,8 @@ riotux.subscribe(that, 'search', function ( state, state_value ) {
   that.update();
 });
 riotux.subscribe(that, 'basematrix', function ( state, state_value ) {
-  console.log("update env opts tag ");
-  console.dir(state_value);
+  // console.log("update env opts tag ");
+  // console.dir(state_value);
   that.shortEditRow = state_value.rows.join('.').replace(/\.\$/g,'');
   that.shortEditCol = state_value.cols.join('.').replace(/\.\$/g,'');
   that.basematrix = riotux.getter('basematrix');
@@ -111,7 +111,7 @@ this.toggleEditRowCol = (toEdit) => {
 
 this.shortTheRowCols = (listOf) => {
   return () => {
-    console.log(listOf);
+    // console.log(listOf);
     return listOf.join('.');
   };
 };
