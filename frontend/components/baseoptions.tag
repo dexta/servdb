@@ -138,8 +138,8 @@ this.togglerowscols = (e) => {
   if(btid===null) return;
   let indexID = parseInt(btid);
   let selName = selEl.options[selEl.selectedIndex].innerText;
-  console.log("btn id "+indexID);
-  console.log("select Name "+selName);
+  // console.log("btn id "+indexID);
+  // console.log("select Name "+selName);
   if(that.search.editcols) {
     // that.basematrix.cols[indexID] = selName;
     // that.storeBasematrix();
@@ -149,7 +149,7 @@ this.togglerowscols = (e) => {
     // that.storeBasematrix();
     that.handleColRowAdding('rows', indexID, selName);
   }
-  console.dir(that.basematrix);
+  // console.dir(that.basematrix);
 };
 
 this.doSomeForm = (e) => {
