@@ -35,6 +35,8 @@
 <script src="components/searchoptions.tag" type="riot/tag"></script>
 <script src="components/baseoptions.tag" type="riot/tag"></script>
 <script src="components/envireditoptions.tag" type="riot/tag"></script>
+<script src="components/inputoutputoptions.tag" type="riot/tag"></script>
+<script src="components/inputoutputview.tag" type="riot/tag"></script>
 <script src="components/alloptions.tag" type="riot/tag"></script>
 <script src="components/allViews.tag" type="riot/tag"></script>
 
@@ -57,12 +59,21 @@
         baseon: false,
         cutbase:false,
       },
+      sideOpen: {
+        edit: false,
+        search: false,
+        setup: true,
+      },
       kvlist: [],
       baseListMatrix: [],
       bases: [],
       basedepth: 4,
       baseselect: [],
       basematrix: {cols:["%","%","%","host"],rows:["%","%","%"]},
+      tmpList: {
+        base: '',
+        tails: []
+      }
     },
     mutations: {  
       increment: function( state ) {
@@ -94,6 +105,15 @@
       setBaseListMatrix: function(state, newBLM) {
         state.baseListMatrix = newBLM;
       },
+      setSideOpened: function(state, newSideOpenState) {
+        state.sideOpen = newSideOpenState;
+      },
+      setTempListBase: function(state, newTempListBase) {
+        state.tmpList.base = newTempListBase;
+      },
+      setTempListTails: function(state, newTempListTails) {
+        state.tmpList.tails = newTempListTails;
+      }
     }
   });
   
@@ -135,11 +155,29 @@
     setBasematrix: (store, newBaseCode) => {
       store.dispatch('setBasematrix',newBaseCode);
     },
-
+    setSideOpened: (store, newSideOpenState) => {
+      store.dispatch('setSideOpened', newSideOpenState);
+    },
+    setTempListBase: (store, newTempListBase) => {
+      store.dispatch('setTempListBase', newTempListBase);
+    },
+    setTempListTails: (store, newTempListTails) => {
+      store.dispatch('setTempListTails', newTempListTails);
+    },
   }); 
   
   riotux.action('kvlist', 'getList', store.state);
   riotux.action('bases', 'getBases', store.state);
+
+
+  const insertKeyValue = (key,val,callback) => {
+    let uKey = encodeURIComponent(key);
+    let uVal = encodeURIComponent(val);
+    let getURL = `/insert/simple/${uKey}/${uVal}`;
+    superagent('get',getURL).then( (res) => { callback(res.body); } );
+  };
+
+
 
   const copyEnvs = (envName,toEnvName,limit) => {
     let cUrl = 'search/key/';

@@ -76,10 +76,6 @@ riotux.subscribe(that, 'search', function ( state, state_value ) {
 
 
 this.handleUpdateSelect = (indexNo) => {
-  
-  // let sek = document.querySelector('#exampleFormControlSelect_'+indexNo);
-  // riotux.action('baseselect', 'setBaseSelect', indexNo, sek.value);
-
   let selAll = document.querySelectorAll('.FormControlSelect');
   
   let newOptVal = [];
@@ -87,10 +83,7 @@ this.handleUpdateSelect = (indexNo) => {
     if(selAll[s]===undefined||selAll[s].selectedIndex===undefined) continue;
     newOptVal.push(selAll[s].options[selAll[s].selectedIndex].innerText);
   }
-  
-  // console.log("newOptVal "+newOptVal);
   riotux.action('baseselect', 'setBaseSelect', newOptVal);
-  // riotux.action('bases', 'getBases', store.state);
 };
 
 this.updateSelect = (indexNo) => {
@@ -100,7 +93,6 @@ this.updateSelect = (indexNo) => {
 
 this.handleColRowAdding = (colrows, intoindex, newValue) => {
   let oppo = (colrows==='cols')? 'rows' : 'cols';
-  // new
 
   for(let n=0;n<intoindex;n++) {
     if(!(that.basematrix[colrows][n]||false)) that.basematrix[colrows][n]='%';
@@ -120,7 +112,6 @@ this.handleColRowAdding = (colrows, intoindex, newValue) => {
   }
   
   that.storeBasematrix();
-  // end new
 };
 
 this.storeBasematrix = () => {
@@ -138,18 +129,12 @@ this.togglerowscols = (e) => {
   if(btid===null) return;
   let indexID = parseInt(btid);
   let selName = selEl.options[selEl.selectedIndex].innerText;
-  // console.log("btn id "+indexID);
-  // console.log("select Name "+selName);
+
   if(that.search.editcols) {
-    // that.basematrix.cols[indexID] = selName;
-    // that.storeBasematrix();
     that.handleColRowAdding('cols', indexID, selName);
   } else if(that.search.editrows) {
-    // that.basematrix.rows[indexID] = selName;
-    // that.storeBasematrix();
     that.handleColRowAdding('rows', indexID, selName);
   }
-  // console.dir(that.basematrix);
 };
 
 this.doSomeForm = (e) => {

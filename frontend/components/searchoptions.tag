@@ -19,12 +19,6 @@
         </span>
                     Add base
       </button>
-
-
-      <!-- <div class="form-check bg-info">
-        <input type="checkbox" aria-label="use as search base" title="use as search base" ref="searchaddbase" id="searchaddbase">        
-        <label class="form-check-input" for="searchaddbase">Add base</label>
-      </div> -->
     </div>
 
     <div class="col-6">
@@ -35,11 +29,6 @@
         </span>
                     Cut base
       </button>
-
-      <!-- <div class="form-check bg-warning">
-        <input type="checkbox" aria-label="erase base in output" title="erase base in output" ref="cutbybase" id="cutbybase">
-        <label class="form-check-input" for="cutbybase">Cut base</label>
-      </div> -->
     </div>
   </div>
 
@@ -49,7 +38,6 @@
     </div>
   </div>
 
-  <!-- <div class="input-group mb-3"> -->
   <div class="form-group row">
     <div class="col-2">
       <div class="input-group-text" click={ updateSearch }>Text</i></div>
@@ -77,31 +65,6 @@
       <button class="btn btn-danger pull-right">send Search</button>
     </div>
   </div>
-
-  <!-- </div> -->
-  <!-- <div class="form-inline"> -->
-<!--     <label class="sr-only" for="filterinputfield">text</label>
-    <div class="input-group col-sm-12">
-      <div class="input-group-prepend">
-        <div class="input-group-text" click={ updateSearch }>Text</i></div>
-      </div>
-      <input type="text" class="form-control" id="searchinputfield" placeholder="service." ref="searchstring" value={ search.text }>
-    </div> -->
-   
-    <!-- <div class="input-group col-sm-12">
-      <div class="input-group-prepend">
-        <div class="input-group-text" click={ updateSearch }>Limit</div>
-      </div>
-      <input type="number" class="form-control" id="searchlimitinputfield" ref="searchlimit" value={ search.limit }>
-    </div>
-    <div class="input-group col-sm-6">
-      <label>Count: { kvlist.length }</label>
-    </div>
-    <div class="input-group col-sm-6">
-      <button class="btn btn-danger pull-right">send Search</button>
-    </div> -->
-    <!-- </div> -->
-
 </form>
 <script>
 
@@ -120,9 +83,7 @@ riotux.subscribe(that, 'kvlist', (state, state_value) => {
 });
 
 riotux.subscribe(that, 'baseselect', (state, state_value) => {
-  // console.dir(riotux.getter('baseselect'));
   that.baseselectpath = riotux.getter('baseselect').join('.').replace(/---select-all---/g,'%').replace(/\.*---select-none---\.*/,'');
-  // that.baseselectpath += '.';
   that.update();
 });
 
