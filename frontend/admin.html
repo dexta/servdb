@@ -140,10 +140,10 @@
     getBases: (store, state) => {
       let urlString = '/base/'+state.basedepth;
       superagent('get',urlString).then( (res) => {
-        for(let b in res.body) {
-          store.dispatch('updateBaseSelect', b, res.body[b][0]);
-        }
         store.dispatch('setBases', res.body);
+        for(let b in res.body) {
+          if(!state.baseselect[b]||false) state.baseselect[b] = res.body[b][0];
+        }
       });      
     },
     setBaseDepth: (store, newBaseDepth) => {

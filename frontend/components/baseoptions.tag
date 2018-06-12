@@ -15,6 +15,11 @@
       <input type="number" class="form-control" aria-describedby="how many level deep" 
                 value="{basedepth}" onchange={updateBasedepth} ref="basedepthvalue">
     </div>
+    <div class="col-8">
+      <button class="btn btn-danger pull-right" onclick={ updateSelect }>
+        Update
+      </button>
+    </div>
   </div>
 
   <div class="form-group row" each={ base, index in bases }>
@@ -30,8 +35,8 @@
       </button>
     </div>
     <div class="col-10">
-      <select class="form-control FormControlSelect" id="formControlSelect_{index}" onchange={ updateSelect(index) }>
-        <option each={ item, count in base } selected={item===select[index]}>{ item }</option>
+      <select class="form-control FormControlSelect" id="formControlSelect_{index}" onchange={ updateSelect }>
+        <option each={ item, count in base } selected={item===baseselect[index]}>{ item }</option>
       </select>
     </div>
   </div>
@@ -41,11 +46,10 @@
 
 let that = this;
 this.search = {editrows:false,editcols:false};
-
 this.open = (opts.open==="true")? true : false;
 
 this.bases = [];
-this.select = [];
+this.baseselect = [];
 this.basedepth = 4;
 this.basematrix = {cols:[],rows:[]};
 
@@ -65,7 +69,7 @@ riotux.subscribe(that, 'basematrix', function ( state, state_value ) {
 });
 
 riotux.subscribe(that, 'baseselect', function(state, state_value) {
-  that.select = riotux.getter('baseselect');
+  that.baseselect = riotux.getter('baseselect');
   that.update();
 });
 
@@ -74,22 +78,15 @@ riotux.subscribe(that, 'search', function ( state, state_value ) {
   that.update();
 });
 
-
-this.handleUpdateSelect = (indexNo) => {
-  let selAll = document.querySelectorAll('.FormControlSelect');
-  
+this.updateSelect = () => {
+  let selAll = document.querySelectorAll('.FormControlSelect');   
   let newOptVal = [];
   for(let s in selAll) {
-    if(selAll[s]===undefined||selAll[s].selectedIndex===undefined) continue;
+    if(selAll[s]===undefined||selAll[s].selectedIndex===undefined) continue;     
     newOptVal.push(selAll[s].options[selAll[s].selectedIndex].innerText);
   }
   riotux.action('baseselect', 'setBaseSelect', newOptVal);
 };
-
-this.updateSelect = (indexNo) => {
-  return () => that.handleUpdateSelect(indexNo);
-};
-
 
 this.handleColRowAdding = (colrows, intoindex, newValue) => {
   let oppo = (colrows==='cols')? 'rows' : 'cols';
@@ -121,6 +118,7 @@ this.storeBasematrix = () => {
 this.updateBasedepth = () => {
   riotux.action('basedepth', 'setBaseDepth', this.refs.basedepthvalue.value);
   riotux.action('bases', 'getBases', store.state);
+  that.update();  
 };
 
 this.togglerowscols = (e) => {

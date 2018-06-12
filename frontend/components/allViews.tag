@@ -16,7 +16,7 @@ this.openShow = {
 riotux.subscribe(that, 'sideOpen', function ( state, state_value ) {
   that.sideOpen = riotux.getter('sideOpen');
   for(let ce in that.childElements) { 
-    console.dir(that.childElements[ce]._tag);
+    // console.dir(that.childElements[ce]._tag);
     that.childElements[ce]._tag.visual = false;
     }
   if(that.sideOpen.search) {

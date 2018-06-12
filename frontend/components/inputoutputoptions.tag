@@ -17,9 +17,19 @@
   </div>
   <div class="form-group row">
     <div class="col-6">
+      <label class="btn btn-danger btn-block">
+        from File <input type="file" hidden onchange={ importFromFile }>
+      </label>  
+
+      <!-- <div class="custom-file">
+        <input type="file" class="custom-file-input" id="filetemplateinput" onchange={ importFromFile }>
+        <label class="custom-file-label" for="filetemplateinput">from File</label>
+      </div> -->
+<!-- 
       <button class="btn btn-block btn-danger">
+        <input type='file' accept='text/plain' style="display:none;" onchange={ importFromFile }>
         from File
-      </button>
+      </button> -->
     </div>
     <div class="col-6">
       <button class="btn btn-block btn-danger" onclick={ importTextbox }>
@@ -61,34 +71,40 @@ riotux.subscribe(that, 'tmpList', function ( state, state_value ) {
   that.update();
 });
 
-
 riotux.subscribe(that, 'baseselect', (state, state_value) => {
   that.baseselectpath = riotux.getter('baseselect').join('.').replace(/---select-all---/g,'').replace(/\.*---select-none---\.*/,'').replace(/\.\./gi,'.');
   that.update();
 });
 
-this.importTextbox = () => {
-  let text = that.refs.textInputByTextbox.value;
-  console.log("text input "+text);
 
+this.importTemplateData = (plainText) => {
+  // console.log(plainText);
   let regexp = /\$\{([A-Z_]+)\}/g;
-  let allVarz = text.match(regexp);
-  console.log("output vars "+allVarz.length);
-  console.dir(allVarz);
-
+  let allVarz = plainText.match(regexp);
+  // console.log("output vars "+allVarz.length);
+  // console.dir(allVarz);
   let tailKeys = [];
   for(let a in allVarz) {
     let tStr = allVarz[a].replace("${","").replace("}","").toLowerCase();
     let tArr = tStr.split("_");
-    // let last = tArr.pop();
     tailKeys.push( tArr.join(".") );
   }
-
   riotux.action('tmpList', 'setTempListTails', tailKeys);
-
-  console.dir(tailKeys);
 };
 
+this.importTextbox = () => {
+  that.importTemplateData(that.refs.textInputByTextbox.value);
+};
+
+this.importFromFile = (event) => {
+  const input = event.target;
+  const reader = new FileReader();
+  reader.onload = function(){
+    let text = reader.result;
+    that.importTemplateData(text);
+  };
+  reader.readAsText(input.files[0]);
+};
 
 this.toggleOpen = () => {
   that.open = !that.open;

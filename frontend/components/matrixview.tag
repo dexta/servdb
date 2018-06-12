@@ -2,7 +2,7 @@
   <table class="table">
     <thead>
       <tr>
-        <th>x/y</th>
+        <th>Basekeys</th>
         <th scope="col" each={ colth, chindex in baseSortTable.cols }>{colth}</th>
       </tr>
     </thead>
@@ -98,7 +98,6 @@ this.subEditEntry = (rowK) => {
   let rowcol = document.getElementById(rowK.key);
   rowcol.disabled = false;
   that.baseSortTable.rows[rowK.row].lines[rowK.col].disabled = false;
-  // console.dir(rowcol);
 };
 
 this.editEntry = (rowK) => {

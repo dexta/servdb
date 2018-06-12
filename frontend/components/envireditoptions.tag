@@ -84,7 +84,6 @@ this.mergeRowCol = () => {
   return merRowCol.join('.')+"%";
 };
 
-
 this.toggleEditRowCol = (toEdit) => {
   return () => { 
     let thone = (toEdit==='cols')? 'editcols' : 'editrows';
@@ -112,7 +111,6 @@ this.shortTheRowCols = (listOf) => {
 this.updateMatrix = () => {
   riotux.action('baseListMatrix', 'getBaseList', store.state, that.mergeRowCol());
 };
-
 
 this.doSomeForm = (e) => {
   (e||false)? e.preventDefault(): false;

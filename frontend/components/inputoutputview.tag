@@ -74,7 +74,6 @@ this.errorMsgList = [];
 
 riotux.subscribe(that, 'tmpList', function ( state, state_value ) {
   that.tmpList = riotux.getter('tmpList');
-  // that.fullTmpKey = (that.tmpList.base!='')? that.tmpList.base+'.' : '';
   that.update();
 });
 
@@ -85,7 +84,11 @@ riotux.subscribe(that, 'bases', function ( state, state_value ) {
 });
 
 riotux.subscribe(that, 'baseselect', (state, state_value) => {
-  that.fullTmpKey = riotux.getter('baseselect').join('.').replace(/---select-all---/g,'').replace(/\.*---select-none---\.*/,'').replace(/\.\./gi,'.');
+  that.fullTmpKey = riotux.getter('baseselect').join('.').replace(/---select-all---/g,'').replace(/\.*---select-none---\.*/,'');
+  that.fullTmpKey = that.fullTmpKey.replace(/\.\./gi,'.');
+  if(that.fullTmpKey[that.fullTmpKey.length-1]!='.') {
+    that.fullTmpKey += '.';
+  }
   that.update();
 });
 

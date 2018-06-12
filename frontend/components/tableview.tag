@@ -46,7 +46,12 @@
         <button if={edit.list[index]} onclick={ toggleEditLine(index) } type="button" class="btn btn-success"><i class="fa fa-toggle-on"></i></button>
         <span class="pull-right">{ index+1 }</span>
       </th>
-      <td>{ cutout(lineobj.key) }</td>
+      <td>
+        { cutout(lineobj.key) }
+        <small if={ errorMsgList[index] } class="form-text text-muted text-{errorMsgList[index].status} {errorMsgList[index].style}">
+          {errorMsgList[index].msg}
+        </small>
+      </td>
       <td>{ lineobj.value }</td>
     </tr>
     <tr if={edit.list[index] && edit.on}>
@@ -67,7 +72,7 @@
         <!-- { lineobj.value } -->
         <div class="input-group">
           <div class="input-group-prepend">
-            <div class="input-group-text">Key</i></div>
+            <div class="input-group-text">Value</i></div>
           </div>
           <input type="text" class="form-control" id="searchinputfield" placeholder="service." ref="valueEdit_{index}" value={ lineobj.value }>
         </div>
@@ -85,11 +90,10 @@ this.kvlist = [];
 this.search = {};
 this.edit = {on:false,list:[]};
 this.view = [];
-
+this.errorMsgList = [];
 
 riotux.subscribe(that, 'kvlist', function( state, state_value ) {
-  // the state changed, than update the component
-  that.kvlist = riotux.getter('kvlist'); // recieves the new state value
+  that.kvlist = riotux.getter('kvlist');
   that.search = riotux.getter('search');
   that.view = [];
   that.edit.list = [];
@@ -102,10 +106,6 @@ riotux.subscribe(that, 'kvlist', function( state, state_value ) {
 
 this.shortout = (stringToShort) => {
   if(that.search.cutbase||false) {
-    // let wildcards = that.search.base.replace(/\./g,'\\\.').replace(/%/g,'.*');
-    // console.log("wildcards "+wildcards);
-    // let whatHe = stringToShort.replace( new RegExp('/'+wildcards+'/g'),'');
-    // console.log("what the hell-> "+whatHe);
     return stringToShort.replace( that.search.base,'');;
   } else {
     return stringToShort;
@@ -115,15 +115,6 @@ this.shortout = (stringToShort) => {
 this.cutout = (stringTo) => {
   return this.shortout(stringTo);
 };
-
-this.on('update', function() {
-  // console.dir(this.search);
-});
-
-this.on('unmount', function() {
-  riotux.unsubscribe(this); // Unsubscribe the observe states
-});
-
 
 this.toggleEditMode = () => {
   if(this.edit.on) {
@@ -137,7 +128,6 @@ this.toggleEditMode = () => {
 this.toggleEditLine = (indexNo) => {
   return () => {
     that.edit.list[indexNo] = !that.edit.list[indexNo];
-    console.log("toggleEditLine "+indexNo);
   };
 };
 
@@ -151,26 +141,49 @@ this.selectAll = (option) => {
       }
       
     }
-    console.dir(that.edit.list);
   }
+};
+
+this.saveTheEntry = (key, value, index) => {
+  insertKeyValue(key, value, (returnMsg) => {
+    that.errorMsgList[index] = returnMsg;
+    that.edit.list[index] = false;
+    that.errorMsgList[index].style = 'fadeItIn';
+    setTimeout( ()=> {
+      that.errorMsgList[index] = '';
+      that.errorMsgList[index].style = 'fadeItOut';
+      that.update();
+    }, 2300);
+    that.update();
+  });
 };
 
 this.saveOne = (indexNo) => {
   return () => {
-    console.log("save Value "+this.refs['keyEdit_'+indexNo].value+" __ "+this.refs['valueEdit_'+indexNo].value);
+    that.saveTheEntry(this.refs['keyEdit_'+indexNo].value,this.refs['valueEdit_'+indexNo].value, indexNo);
   };
 };
 
 this.saveAll = () => {
   for(let a in that.edit.list) {
     if(that.edit.list[a]) {
-      console.log("save All  "+a+": "+that.kvlist[a].key+" __ "+that.kvlist[a].value);
-      console.log("change Value "+this.refs['keyEdit_'+a].value+" __ "+this.refs['valueEdit_'+a].value);
+      that.saveTheEntry(this.refs['keyEdit_'+a].value,this.refs['valueEdit_'+a].value, a);
     }
   }
+  that.edit.on = false;
 };
 
-
 </script>
-
+<style>
+.fadeItOut {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 2s, opacity 2s linear;
+}
+.fadeItIn {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 7s linear;
+}
+</style>
 </tableview>
