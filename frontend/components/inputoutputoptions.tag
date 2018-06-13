@@ -109,5 +109,8 @@ this.importFromFile = (event) => {
 this.toggleOpen = () => {
   that.open = !that.open;
 };
+this.doSomeForm = (e) => {
+  (e||false)? e.preventDefault(): false;
+};
 </script>
 </inputoutputoptions>

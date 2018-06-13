@@ -4,7 +4,7 @@
   "description": "key value sql server attributes",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node app.js",
     "test": "npm test"
   },
   "keywords": [
