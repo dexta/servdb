@@ -141,9 +141,6 @@ this.keyUpOnBaseString = () => {
   return 0;
   let baseString = that.refs.tailsbasestring.value;
   let baseList = baseString.split('.');
-  console.log("let baseString "+baseString);
-
-  // that.refs.tailsbasestring.placeholder = baseString+"nice.if.it.works";
 };
 
 this.saveAllItems = () => {
