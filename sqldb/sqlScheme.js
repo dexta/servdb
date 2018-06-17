@@ -13,13 +13,13 @@ shema.testDbTable = async (db,tableName) => {
   console.log("test db table ->  "+tableName);
   let doesItExist = await db.pquery(`SELECT * FROM ${tableName} LIMIT 1;`)
                     .catch((err) => {
-                      // console.dir(err);
                       return {err:`no table with name ${tableName}`};
                     });
-  // console.dir(doesItExist); 
+
   if(doesItExist.length===0) {
     return {err:`no table with name ${tableName}`};
   }
+
   return doesItExist;
 };
 
