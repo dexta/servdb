@@ -10,7 +10,13 @@ let shema = {};
 // };
 
 shema.testDbTable = async (db,tableName) => {
-  let doesItExist = await db.pquery(`SELECT * FROM ${tableName} LIMIT 1;`);
+  console.log("test db table ->  "+tableName);
+  let doesItExist = await db.pquery(`SELECT * FROM ${tableName} LIMIT 1;`)
+                    .catch((err) => {
+                      // console.dir(err);
+                      return {err:`no table with name ${tableName}`};
+                    });
+  // console.dir(doesItExist); 
   if(doesItExist.length===0) {
     return {err:`no table with name ${tableName}`};
   }
@@ -30,24 +36,6 @@ shema.showColumnsFrom = async (db,nameTable) => {
 
 
 shema.createTable = async (db,createObj) => {
-  // DROP TABLE IF EXISTS `history`;
-    
-  // CREATE TABLE `history` (
-  //   `id` INTEGER NOT NULL AUTO_INCREMENT,
-  //   `key` VARCHAR(3072) NOT NULL,
-  //   `value` VARCHAR(3072) NOT NULL,
-  //   PRIMARY KEY (`id`)
-  // );
-  // createObj = {};
-  // createObj.dropTable=true;
-  // createObj.tableName='history';
-  // createObj.primaryKey='id';
-  // createObj.col = [];
-  // createObj.col[0] = {name:'id',type:'INTEGER',options:' NOT NULL AUTO_INCREMENT'};
-  // createObj.col[1] = {name:'key',type:'VARCHAR(3072)',options:'NOT NULL'},
-  // createObj.col[2] = {name:'value',type:'VARCHAR(3072)',options:'NOT NULL'},
-  // createObj.col[3] = {name:'',type:'',options:''},
-
   console.log("create Object ");
   console.dir(createObj);
 
@@ -83,7 +71,7 @@ shema.testKeysValues = async (db,tabname,keyval,testonly) => {
   let insK = `INSERT INTO ${tabname} (`;
   let insV = ` VALUES (`;
   for(let kv=0,kvl=keyval.cols.length;kv<kvl;kv++) {
-    sel += '`'+keyval.cols[kv]+'` = "'+keyval.vals[kv]+'"';
+    sel += '`'+keyval.cols[kv]+'` = "'+keyval.vals[kv]+'" AND ';
     insK += (kv!=0)? ',':'';
     insK += ' `'+keyval.cols[kv]+'`';
     insV += (kv!=0)? ',':'';
@@ -92,9 +80,17 @@ shema.testKeysValues = async (db,tabname,keyval,testonly) => {
   insK += ')';
   insV += ')';
   
-  let urThere = await db.pquery(sel);
-  if( urThere.length===0 ) {
+  sel = sel.replace(/\sAND\s$/i,'');
+
+  console.log("test key val select query "+sel);
+  let urThere = await db.pquery(sel).catch( (err) => { return err; });
+
+  console.log("test Key Value  ->");
+  console.dir(urThere);
+  if( !(urThere||false) || (urThere.length===0) ) {
     if(justtest) return true;
+    console.log("insert query ");
+    console.log(insK+' '+insV);
     await db.pquery(insK+' '+insV);
     return true;
   }

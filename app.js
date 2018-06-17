@@ -24,19 +24,19 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const sql = require('./sqldb');
 
-async function checkVersion() {
-  let lastVersion = await sql.pquery('SELECT text FROM titletext WHERE title = "version" ORDER BY id ASC LIMIT 1;');
-  console.log("lastVersion "+lastVersion[0].text);
-  // console.log("update to version 0.0.2");
-  // sql.importData(__dirname+'/updateData/version002.sql');
-};
+// async function checkVersion() {
+//   let lastVersion = await sql.pquery('SELECT text FROM titletext WHERE title = "version" ORDER BY id ASC LIMIT 1;');
+//   console.log("lastVersion "+lastVersion[0].text);
+//   // console.log("update to version 0.0.2");
+//   // sql.importData(__dirname+'/updateData/version002.sql');
+// };
 
 const retrysql = () => {
   sql.testDatabase( (testresult) => {
     if(testresult.err) {
       setTimeout(retrysql,2000);
     } else {
-      checkVersion();
+      sqlScheme.checkSQLstate(sql.db,sqlSchemeConfig);
     }
     console.dir(testresult);
   });

@@ -91,6 +91,7 @@ rdb.query = function query(statement,callback) {
 rdb.pquery = function pquery(sql,args) {
   return new Promise( ( resolve, reject ) => {
       this.connection.query( sql, args, ( err, rows ) => {
+          // console.dir(err);
           if ( err )
               return reject( err );
           resolve( rows );
