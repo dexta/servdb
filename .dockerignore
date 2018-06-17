@@ -1,0 +1,10 @@
+cliclients
+data*
+node_modules
+keys
+# config.js
+Dockerfile*
+docker-compose*
+.dockerignore
+.env
+.git*

@@ -15,6 +15,8 @@ services:
       MYSQL_USER: serviceuser
       MYSQL_PASSWORD: serviceuser23password
       MYSQL_DATABASE: serv
+    depends_on:
+      - sqldb
     networks:
       - frontendNetwork
       - backendNetwork
@@ -30,7 +32,7 @@ services:
     networks:
       - backendNetwork
     volumes:
-      - ./data/maria:/var/lib/mysql
+      - ./data-setuptest/maria:/var/lib/mysql
 
 networks:
   frontendNetwork:
