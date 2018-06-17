@@ -6,6 +6,7 @@ import (
   "strings"
   "os"
   "log"
+  "io/ioutil"
   "encoding/json"
   "net/url"
 
@@ -92,6 +93,10 @@ func main() {
       Name: "template, tpl",
       Usage: "replace ${vars} inside template file",
     },
+    cli.StringFlag{
+      Name: "alternative, alt",
+      Usage: "fallback var values if server connection is broken [bootstrap!]",
+    },
   }
 
 
@@ -159,6 +164,11 @@ func main() {
       searchTemplate = c.String("template")
     }
 
+    alternativeFileData := ""
+    if c.String("alternative") != "" {
+      alternativeFileData = c.String("alternative")
+    }
+
     // URLs for diffrent needs
     urlString := fmt.Sprintf("%s:%s/%s/%s",searchHost,searchPort,searchPath,url.QueryEscape(searchString))
 
@@ -175,7 +185,7 @@ func main() {
     }
 
     if(searchTemplate != "") {
-      multLine := getURL(urlString)
+      multLine := canBeAlternate(urlString, alternativeFileData)
       replMap := map[string]string{}
       for _, line := range strings.Split(strings.TrimSuffix(multLine, "\n"), "\n") {
         keyVal := strings.Split(line, "=")
@@ -252,6 +262,23 @@ func openTemplate(filename string, replst map[string]string) string {
 
 
   return ""
+}
+
+func canBeAlternate(url string, altFilename string) string {
+  request := gorequest.New()
+  resp, body, errs := request.Get(url).End()
+  if errs != nil || resp.Status != "200 OK" {
+    if altFilename != "" {
+      altbody, err := ioutil.ReadFile(altFilename)
+      if err != nil {
+        log.Fatal("error:", err)
+      }
+      return string(altbody)
+    } else {
+      log.Fatal(errs)
+    }    
+  }
+  return body
 }
 
 func getURL(url string) string {
