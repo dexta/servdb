@@ -6,7 +6,7 @@ import (
   "io/ioutil"
   "log"
   "encoding/json"
-  "net/url"
+  // "net/url"
   "strings"
   "regexp"
 
@@ -38,13 +38,13 @@ var config Conf
 
 var jsonContent []KeyValue
 
-func main() {
-
-  doOneAll := getTheDataFromSomewhere("servconfig.json")
-  final := formateTheDataByConfig(doOneAll)
-  // formateKeyValueList(final)
-  handleTemplate(final)
-} 
+// func main() {
+//   config = readConfig("servconfig.json")
+//   doOneAll := getTheDataFromSomewhere("%s:%s/search/%s/%s/%s",config.Host,config.Port,config.Type,config.Limit,url.QueryEscape(config.Base+config.Find))
+//   final := formateTheDataByConfig(doOneAll)
+//   // formateKeyValueList(final)
+//   handleTemplate(final)
+// } 
 
 func formateKeyValueList(kvlist []KeyValue) {
   for _, element := range kvlist {
@@ -52,13 +52,21 @@ func formateKeyValueList(kvlist []KeyValue) {
   }
 }
 
+func doTheDooot(base string, tail string) string {
+  return strings.Replace(base+"."+tail, "..", ".",-1)
+}
+
+func upChar(whatever string) string {
+  return strings.ToUpper(whatever)
+}
+
 // 
 // Write the new structure here
 // 
-func getTheDataFromSomewhere(filename string) []KeyValue {
+func getTheDataFromSomewhere(urlString string) []KeyValue {
   var newKeyValueList []KeyValue
-  config = readConfig(filename)
-  urlString := fmt.Sprintf("%s:%s/search/%s/%s/%s",config.Host,config.Port,config.Type,config.Limit,url.QueryEscape(config.Base+config.Find))
+
+  // urlString := fmt.Sprintf("%s:%s/search/%s/%s/%s",config.Host,config.Port,config.Type,config.Limit,url.QueryEscape(config.Base+config.Find))
 
   newKeyValueList = getURL(urlString)
   if len(newKeyValueList) == 0 {
@@ -70,18 +78,19 @@ func getTheDataFromSomewhere(filename string) []KeyValue {
   return newKeyValueList
 }
 
-func formateTheDataByConfig(kvlist []KeyValue) []KeyValue {
+func formateTheDataByConfig(kvlist []KeyValue, freshConfig Conf) []KeyValue {
   
   var newKeyValueList []KeyValue
-  Base := strings.Replace(config.Base+"."+config.Find+".", "..", ".",-1)
-  r, _ := regexp.Compile(Base)
+  
+  fts := regexp.MustCompile("\\%[0-9]*$")
+  Search := fts.ReplaceAllString(freshConfig.Find,"")
+  Base := doTheDooot(freshConfig.Base, Search)
 
-  if config.Outp == "json" {
-    return kvlist
-  }
+  r, _ := regexp.Compile(Base)
 
   for _, element := range kvlist {
     if ! r.MatchString(element.Key) {
+      fmt.Println("not match ",Base ,element.Key,element.Value)
       continue
     }
 
@@ -92,7 +101,7 @@ func formateTheDataByConfig(kvlist []KeyValue) []KeyValue {
     element.Key = strings.ToUpper(element.Key)
     element.Key = strings.Replace(element.Key, ".", "_", -1)
 
-    if config.Export {
+    if freshConfig.Export {
       element.Key = "export "+element.Key
     }
 
@@ -100,6 +109,12 @@ func formateTheDataByConfig(kvlist []KeyValue) []KeyValue {
   }
   return newKeyValueList
 }
+
+func jsonConsoleOutput(kvlist []KeyValue) {
+  m, _ := json.Marshal(kvlist)
+  fmt.Println( string( m ) )
+}
+
 // 
 // Read/Get Data 
 // 
@@ -111,9 +126,10 @@ func readConfig(filename string) Conf {
   configuration := Conf{}
   err := decoder.Decode(&configuration)
   if err != nil {
-    log.Fatal("error:", err)
+    log.Fatal("error read config:", err)
   }
   // fmt.Println(configuration)
+  // config = configuration
   return configuration
 }
 
@@ -123,10 +139,11 @@ func getURL(url string) []KeyValue {
   request := gorequest.New()
   resp, body, err := request.Get(url).End()
   if err != nil || resp.Status != "200 OK" {
-    fmt.Println("cant get urlString")
+    // fmt.Println("cant get urlString")
     return newKeyValueList
   }
   json.Unmarshal([]byte(body), &jsonContent)
+  fmt.Println(jsonContent)
   return jsonContent
 }
 
@@ -144,8 +161,8 @@ func readJsonDataFile(filename string) []KeyValue {
   return newKeyValueList
 }
 
-func handleTemplate(kvlist []KeyValue) {
-  bigTemplateString := openTemplate()
+func handleTemplate(kvlist []KeyValue, freshConfig Conf) {
+  bigTemplateString := openTemplate(freshConfig)
   regVarTest, _ := regexp.Compile("\\${[A-Z_]+}")
 
   for _, element := range kvlist {
@@ -157,25 +174,25 @@ func handleTemplate(kvlist []KeyValue) {
     log.Fatal("error:", "there are some discofans left here tonight")
   }
 
-  if config.TemplateOut != "" {
-    writeTempate(bigTemplateString)
+  if freshConfig.TemplateOut != "" {
+    writeTempate(bigTemplateString, freshConfig)
   } else {
     fmt.Println(bigTemplateString)
   }  
 
 }
 
-func openTemplate() string {
+func openTemplate(config Conf) string {
   bigTemplateString, err := ioutil.ReadFile(config.TemplateIn)
   if err != nil {
-    log.Fatal("error:", err)
+    log.Fatal("error open template ["+config.TemplateIn+"]", err)
   }
   return string(bigTemplateString)
 }
 
-func writeTempate(bigTemplateString string) {
+func writeTempate(bigTemplateString string, config Conf) {
   err := ioutil.WriteFile(config.TemplateOut, []byte(bigTemplateString), 0644)
   if err != nil {
-    fmt.Println(err)
+    log.Fatal("error write template: ",err)
   }
 }
