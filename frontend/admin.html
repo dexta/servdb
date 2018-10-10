@@ -196,6 +196,33 @@
     });
   };
 
+  const str2Ojb = (nxtObj, keyList, value) => {
+    let tKey = keyList.shift();
+    if(keyList.length===0) {
+      nxtObj[tKey] = value;
+      return nxtObj;
+    } else {
+      nxtObj[tKey] = {};
+      return str2Ojb(nxtObj, keyList, value);
+    }
+  };
+
+
+  const giveRefOfLast = (longObj) => {
+    let keyChain = longObj.key.split('.');
+    let tmpObj = {}
+    let tmpRoot = tmpObj;
+    for(let k = 0,kl=keyChain.length; k < kl ; k++) {
+      if(kl===k+1) {
+        tmpObj[keyChain[k]] = longObj.value;
+
+      } else {
+        tmpObj[keyChain[k]] = {};
+        tmpObj = tmpObj[keyChain[k]];
+      }
+    }
+    return tmpRoot;
+  };
 
   // const getKVList = (strtoget) => {
   //   let urlString = '/search/key/100/'+strtoget;
