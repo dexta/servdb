@@ -1,17 +1,16 @@
-#Serv DB
+# Serv DB
 
 Simple key value nodejs percona app
 
-##Install
+## Install
 
 npm install
 
-
-##Build
+## Build
 
 docker build -t servDBservice .
 
-##RUN
+## RUN
 
-docker-compose up
+docker-compose up --build
 
