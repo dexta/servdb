@@ -2,8 +2,8 @@ version: "3"
 
 services:
   api:
-    build: .
-    # image: dexta423/serv-db-all:0.4
+      #    build: .
+    image: dexta423/serv-db-all:0.4
     command: npm start
     volumes:
      - ./:/var/www/
