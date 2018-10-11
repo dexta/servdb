@@ -141,6 +141,31 @@ app.get('/base/:depth', async (req, res) => {
   }
   res.status(200).json(reOut);
 });
+
+app.get('/inv/:servername', async (req, res) => {
+  let inQuery = `SELECT * FROM servtable WHERE key LIKE 'server.${req.params.servername}';`;
+  console.log(`get Invertory by name:${req.params.servername}\n ${inQuery}\n`);
+  let serverInventory = await sql.pquery(inQuery);
+  res.status(200).json(serverInventory);
+});
+
+
+app.post('/inv/add', async (req, res) => {
+  console.dir(req.body);
+  if(!req.body.servername) res.status(423).send('missing server name');
+  let wPairs = [];
+  for(let n in req.body) {
+    if(n==='servername') continue;
+    let tmpRe = await sql.insertOne({key:`server.${req.body.servername}.${n}`,value:req.body[n]});
+    wPairs.push(tmpRe);
+    // wPairs.push(`('server.${req.body.servername}.${n}','${req.body[n]}')`);
+  }
+  // let poQuery = `INSERT INTO servtable (\`key\`,\`value\`) VALUES `+ wPairs.join(",") + ";";
+  // console.log(`add Invertory by name:${req.body.servername}\n ${poQuery}\n`);
+  // let poRet = await sql.pquery(poQuery);
+  res.status(200).json(wPairs);
+});
+
 // --
 // ----
 // ------
