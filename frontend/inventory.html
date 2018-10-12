@@ -26,7 +26,7 @@
 
 <!-- include extern librarys -->
 <script src="js/superagent.js"></script>
-
+<script src="js/riotux.js"></script>
 <!-- include components -->
 <script src="components/searchInventory.tag" type="riot/tag"></script>
 <script src="components/inventoryDetails.tag" type="riot/tag"></script>
@@ -38,6 +38,32 @@
 
 <script type="text/javascript">
   riot.mount('*');
+  let store = riotux.Store({
+    state: {
+      invViewList: {},
+      invAllList: {}
+    },
+    mutations: {  
+      addInventoryItem: function( state, itemObj ) {
+        if(!itemObj.servername) return;
+        state.invAllList[itemObj.servername] = itemObj;
+      },
+      activeInventoryItem: function( state, servername) {
+        if(!state.invAllList[servername]) return;
+        state.invViewList = state.invAllList[servername];
+      },
+    }
+  });
+  let action = riotux.Actions({
+    addInvItem: (store, iObj) => {
+      store.dispatch('addInventoryItem', iObj);
+    },
+    setActiveItem: (store, servername) => {
+      store.dispatch('activeInventoryItem', servername);
+    }
+  });
+
+  riotux.action('invAllList', 'addInvItem', store.state);
 </script>
 
 </body>
