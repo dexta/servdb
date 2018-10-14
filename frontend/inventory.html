@@ -27,6 +27,7 @@
 <!-- include extern librarys -->
 <script src="js/superagent.js"></script>
 <script src="js/riotux.js"></script>
+<script src="js/deepMerge.js"></script>
 <!-- include components -->
 <script src="components/searchInventory.tag" type="riot/tag"></script>
 <script src="components/inventoryDetails.tag" type="riot/tag"></script>
@@ -45,12 +46,16 @@
     },
     mutations: {  
       addInventoryItem: function( state, itemObj ) {
-        if(!itemObj.servername) return;
-        state.invAllList[itemObj.servername] = itemObj;
+        if(!itemObj.searchEntry) return;
+        state.invAllList[itemObj.searchEntry] = itemObj;
       },
-      activeInventoryItem: function( state, servername) {
-        if(!state.invAllList[servername]) return;
-        state.invViewList = state.invAllList[servername];
+      activeInventoryItem: function( state, searchEntry) {
+        if(!state.invAllList[searchEntry]) return;
+        state.invViewList = state.invAllList[searchEntry];
+      },
+      deleteItem: (state, toDelName) => {
+        if(!state.invAllList[toDelName]) return;
+        delete state.invAllList[toDelName];
       },
     }
   });
@@ -58,12 +63,148 @@
     addInvItem: (store, iObj) => {
       store.dispatch('addInventoryItem', iObj);
     },
-    setActiveItem: (store, servername) => {
-      store.dispatch('activeInventoryItem', servername);
+    setActiveItem: (store, searchEntry) => {
+      store.dispatch('activeInventoryItem', searchEntry);
+    },
+    deleteInvItem: (store, searchStrIndex) => {
+      store.dispatch('deleteItem', searchStrIndex);
     }
   });
 
-  riotux.action('invAllList', 'addInvItem', store.state);
+
+  const searchItem = (searchStr) => {
+    let getURL = `/inv/${searchStr}`;
+    superagent('get',getURL).then( (searchResult) => {
+      if(!searchResult.body) return;
+      // console.dir(searchResult.body);
+      // let invTmp = ;
+      let toMergeList = [{searchEntry:searchStr}];
+      for(let i in searchResult.body) {
+        let sinItem = searchResult.body[i];
+        let keyList = sinItem.key.replace('server.','').split('.');
+        let treeRef = {};
+        let tempRef = treeRef;
+        for(let k in keyList) {
+          tempRef[keyList[k]] = (keyList.length===parseInt(k)+1)? sinItem.value : {};
+          tempRef = tempRef[keyList[k]];          
+        }
+        toMergeList.push(treeRef)
+        // console.dir(treeRef);
+        // invTmp[]=sinItem.value;
+      }
+
+      let invTmp = deepmerge.all(toMergeList);
+
+      console.dir(invTmp);
+      riotux.action('invAllList', 'addInvItem', invTmp);
+      riotux.action('invViewList','setActiveItem',searchStr);
+    });
+  };
+
+  const json2SQLkv = (nameBase,nList,jsObj) => {
+    if(typeof nList != 'object') return [];
+    for(let i in jsObj) {
+      if(typeof jsObj[i] === 'object') { 
+        nList = json2SQLkv(nameBase+'.'+i,nList,jsObj[i]);
+      } else if(jsObj[i]||false) {
+        nList.push({key:`${nameBase}.${i}`,val:jsObj[i]});
+      } else { 
+        continue;
+      }
+    }
+    return nList;
+  };
+
+
+let testJSON ={
+  "lxSERVERNAME": {
+    "os": {
+      "distri": "deb|red|suse",
+      "version":"release|date",
+      "kernel":"fulluname-a"
+    },
+    "hw": {
+      "network": {
+        "eth0": {
+          "ip4": "[0-9]{3}.[0-9]{3}.[0-9]{3}.[0-9]{3}",
+          "ip6": "[0-9a-f]+:[0-9a-f:]+:[0-9a-f]+",
+          "mac": "[0-9a-f]{16}"
+        }
+      },
+      "cpu": {
+        "count": "[1-9]+",
+        "mhz": "[0-9]{3,}"
+      },
+      "ram": {
+        "mb": "[0-9]{3,}"
+      },
+      "disk": {
+        "sda": {
+          "gb": "[0-9]{2,}"
+        }
+      },
+      "df": {},
+      "lvm": {}
+    },
+    "service": {
+      "databases": {
+        "mongodb": {
+          "version": "[a-zA-Z0-9]+",
+          "port": "[0-9]{2,5}",
+          "auth": "user|token|cert"  ,
+          "mode": "single|replica|cluser",
+          "role": "master|worker|spare"
+        },
+        "radis": {
+          "version": "[a-zA-Z0-9]+",
+          "port": "[0-9]{2,5}",
+          "auth": "user|token|cert"  ,
+          "mode": "single|replica|cluser",
+          "role": "master|worker|spare"
+        },
+        "mysql": {
+          "version": "[a-zA-Z0-9]+",
+          "port": "[0-9]{2,5}",
+          "auth": "user|token|cert"  ,
+          "mode": "single|replica|cluser",
+          "role": "master|worker|spare"
+        }
+      },
+      "runtimes": {
+        "nodejs": {
+          "version": "[a-zA-Z0-9]+",
+          "npm_version": "[a-zA-Z0-9]+",
+          "global_bin": {
+            "nodemon": {
+              "version": "[a-zA-Z0-9]+",
+              "path": "\/[a-zA-Z0-9_-]+"
+            },
+            "pm2":{
+              "version": "[a-zA-Z0-9]+",
+              "path": "\/[a-zA-Z0-9_-]+"
+            }
+          }
+        },
+        "python": {
+          "version": "[a-zA-Z0-9]+",
+          "version_27": "[a-zA-Z0-9]+",
+          "version_3x": "[a-zA-Z0-9]+",
+          "pip_version": "[a-zA-Z0-9]+"
+        }
+      },
+      "http": {
+        "apache": {
+          "version": "[a-zA-Z0-9]+",
+          "mod_MODULENAME": "[a-zA-Z0-9]+"
+        },
+        "nginx": {},
+        "haproxy": {},
+        "varnish": {}
+      }
+    },
+    "application": {}
+  }
+}
 </script>
 
 </body>

@@ -143,7 +143,8 @@ app.get('/base/:depth', async (req, res) => {
 });
 
 app.get('/inv/:servername', async (req, res) => {
-  let inQuery = `SELECT * FROM servtable WHERE key LIKE 'server.${req.params.servername}';`;
+  let serverName = sql.connection.escape('server.'+req.params.servername+'%');
+  let inQuery = `SELECT * FROM servtable WHERE \`key\` LIKE ${serverName};`;
   console.log(`get Invertory by name:${req.params.servername}\n ${inQuery}\n`);
   let serverInventory = await sql.pquery(inQuery);
   res.status(200).json(serverInventory);
