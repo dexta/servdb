@@ -152,7 +152,7 @@ app.get('/inv/:servername', async (req, res) => {
 
 
 app.post('/inv/add', async (req, res) => {
-  console.dir(req);
+  console.dir(req.body);
   if(!req.body.servername) return res.status(423).send('missing server name');
   let wPairs = [];
   for(let n in req.body) {
