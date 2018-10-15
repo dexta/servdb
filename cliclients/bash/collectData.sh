@@ -34,73 +34,76 @@ if [[ -z "$HOSTNAME" ]]; then
 fi
 
 PREFIX_SERVER="server.$HOSTNAME"
-ALLVAROUT="'servername':'$HOSTNAME'"
+ALLVAROUT="\"servername\":\"$HOSTNAME\""
 
 if [ ! -z "$ETH0_IP4" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.network.eth0.ip4':'$ETH0_IP4'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.network.eth0.ip4\":\"$ETH0_IP4\"";
 fi
 
 if [ ! -z "$ETH1_IP4" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.network.eth1.ip4':'$ETH1_IP4'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.network.eth1.ip4\":\"$ETH1_IP4\"";
 fi
 
 if [ ! -z "$ETH0_IP6" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.network.eth0.ip6':'$ETH0_IP6'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.network.eth0.ip6\":\"$ETH0_IP6\"";
 fi
 
 if [ ! -z "$ETH1_IP6" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.network.eth1.ip6':'$ETH1_IP6'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.network.eth1.ip6\":\"$ETH1_IP6\"";
 fi
 
 if [ ! -z "$ETH0_MAC" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.network.eth0.mac':'$ETH0_MAC'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.network.eth0.mac\":\"$ETH0_MAC\"";
 fi
 
 if [ ! -z "$ETH1_MAC" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.network.eth1.mac':'$ETH1_MAC'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.network.eth1.mac\":\"$ETH1_MAC\"";
 fi
 
 if [ ! -z "$ETH0_STATUS" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.network.eth0.status':'$ETH0_STATUS'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.network.eth0.status\":\"$ETH0_STATUS\"";
 fi
 
 if [ ! -z "$ETH1_STATUS" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.network.eth1.status':'$ETH1_STATUS'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.network.eth1.status\":\"$ETH1_STATUS\"";
 fi
 
 if [ ! -z "$ETH0_IP4" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.network.eth0.ip4':'$ETH0_IP4'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.network.eth0.ip4\":\"$ETH0_IP4\"";
 fi
 
 if [ ! -z "$CPU_COUNT" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.cpu.count':'$CPU_COUNT'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.cpu.count\":\"$CPU_COUNT\"";
 fi
 
 if [ ! -z "$CPU_MHZ" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.cpu.mhz':'$CPU_MHZ'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.cpu.mhz\":\"$CPU_MHZ\"";
 fi
 
 if [ ! -z "$RAM_KB" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.ram.kb':'$RAM_KB'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.ram.kb\":\"$RAM_KB\"";
 fi
 
 if [ ! -z "$DISK_GB_SDA" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.disk.sda.gb':'$DISK_GB_SDA'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.disk.sda.gb\":\"$DISK_GB_SDA\"";
 fi
 
 if [ ! -z "$DISK_GB_SDB" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.disk.sdb.gb':'$DISK_GB_SDB'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.disk.sdb.gb\":\"$DISK_GB_SDB\"";
 fi
 
 if [ ! -z "$DISK_GB_SDC" ]; then
-	ALLVAROUT="$ALLVAROUT,'$PREFIX_SERVER.hw.disk.sdc.gb':'$DISK_GB_SDC'";
+	ALLVAROUT="$ALLVAROUT,\"$PREFIX_SERVER.hw.disk.sdc.gb\":\"$DISK_GB_SDC\"";
 fi
-
-
 
 ALLVAROUT="{$ALLVAROUT}"
 
-echo $ALLVAROUT
+# Working bad ugly solution 
+echo $ALLVAROUT > /tmp/badgirldoitwell
+curl --header "Content-Type: application/json" -X POST -d @/tmp/badgirldoitwell $TARGETHOST
 
+# but the ugliness dont stop there
 
-curl --header "Content-Type: application/json" -X POST -d "$ALLVAROUT" $TARGETHOST
+# Edisons 1k
+# to simple
+# curl --header "Content-Type: application/json" -X POST -d $ALLVAROUT $TARGETHOST
