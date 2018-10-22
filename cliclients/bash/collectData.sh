@@ -20,7 +20,7 @@ ETH0_STATUS=$(cat /sys/class/net/eth0/operstate)
 ETH1_STATUS=$(cat /sys/class/net/eth1/operstate)
 
 CPU_COUNT=$(grep -c ^processor /proc/cpuinfo)
-CPU_MHZ=$(lscpu | grep "MHz" | awk '{print $3}')
+CPU_MHZ=$(lscpu | egrep "CPU max MHz.*([0-9]+)\." | egrep -o "[1-9][0-9]+")
 
 RAM_KB=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 

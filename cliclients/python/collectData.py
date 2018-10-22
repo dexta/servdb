@@ -12,7 +12,7 @@ infocmds = {
     },
     "cpu": {
       "count": "grep -c ^processor /proc/cpuinfo",
-      "mhz": "lscpu | grep \"MHz\" | awk '{print $3}'"
+      "mhz": "lscpu | egrep \"CPU max MHz.*([0-9]+)\.\" | egrep -o \"[1-9][0-9]+\""
     },
     "ram": {
       "mb": "grep MemTotal /proc/meminfo | awk '{print $2}'"
@@ -42,6 +42,8 @@ def walkCMDs(cmdlist,prefix):
     else:
       # print(prefix+"."+key+":"+item)
       reItem = getshell(item)
+      if not reItem:
+        continue
       print(prefix+"."+key+":"+reItem)
 
 
